@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:background="@drawable/back2"
+    android:orientation="vertical"
+    >
+    <TextView
+        android:layout_marginTop="340dp"
+        android:layout_marginLeft="3dp"
+        android:gravity="bottom"
+        android:textSize="20dp"
+        android:layout_gravity="bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="User name:"
+        />
+
+    <EditText
+        android:id="@+id/userNameET"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginLeft="10dp"
+        android:background="@drawable/custom_shape"
+        android:drawableLeft="@drawable/baseline_person_24"
+        android:gravity="bottom"
+        android:hint="User name"
+
+        android:textSize="20dp" />
+
+    <TextView
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="3dp"
+        android:gravity="bottom"
+        android:textSize="20dp"
+        android:layout_gravity="bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="password:"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        >
+    <EditText
+        android:id="@+id/passwordET"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginLeft="10dp"
+        android:background="@drawable/custom_shape"
+        android:drawableLeft="@drawable/baseline_lock_24"
+        android:gravity="bottom"
+        android:hint="password"
+        android:textSize="20dp"
+        android:inputType="textPassword"
+        />
+
+        <ToggleButton
+            android:id="@+id/togglePassword"
+            android:layout_width="25dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="-35dp"
+            android:background="@drawable/baseline_visibility_24"
+            android:onClick="TogglePassword"
+            android:textOff=""
+            android:textOn="" />
+
+    </LinearLayout>
+    <TextView
+        android:id="@+id/error"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
+        android:textSize="15dp"
+        android:textColor="#FF0000"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        >
+
+        <CheckBox
+            android:id="@+id/remember"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Remember me" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="right"
+            android:layout_marginRight="7dp"
+            android:text="Forgot password"
+            android:textSize="15dp"
+            android:onClick="Forgot_password"
+            />
+    </LinearLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:text="login"
+        android:onClick="login"
+        />
+
+
+</LinearLayout>
