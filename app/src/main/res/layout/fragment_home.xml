@@ -1,19 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="@drawable/school"
-    tools:context=".MainActivity2"
-    >
+    tools:context=".MainActivity2">
 
     <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
         android:id="@+id/frameLayout"
-        >
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/building600"
+            android:layout_width="123dp"
+            android:layout_height="35dp"
+            android:translationX="118dp"
+            android:translationY="6dp"
+            android:visibility="invisible" />
+        <Button
+            android:id="@+id/building600Part2"
+            android:layout_width="20dp"
+            android:layout_height="170dp"
+            android:translationX="245dp"
+            android:translationY="10dp"
+            android:visibility="invisible" />
+
+        <Button
+            android:id="@+id/building500"
+            android:layout_width="81dp"
+            android:layout_height="45dp"
+            android:translationX="50dp"
+            android:translationY="90dp"
+            android:visibility="invisible" />
+
+        <Button
+            android:id="@+id/building400"
+            android:layout_width="81dp"
+            android:layout_height="45dp"
+            android:translationX="47dp"
+            android:translationY="200dp"
+            android:visibility="invisible" />
+
+        <Button
+            android:id="@+id/building300"
+            android:layout_width="81dp"
+            android:layout_height="45dp"
+            android:translationX="47dp"
+            android:translationY="294dp"
+            android:visibility="invisible" />
+
+        <Button
+            android:id="@+id/building200"
+            android:layout_width="81dp"
+            android:layout_height="45dp"
+            android:translationX="47dp"
+            android:translationY="380dp"
+            android:visibility="invisible" />
+
+        <Button
+            android:id="@+id/building100"
+            android:layout_width="147dp"
+            android:layout_height="45dp"
+            android:translationX="50dp"
+            android:translationY="472dp"
+            android:visibility="invisible" />
+
+        <Button
+            android:id="@+id/SportsHall"
+            android:layout_width="wrap_content"
+            android:layout_height="79dp"
+            android:translationX="35dp"
+            android:translationY="620dp"
+            android:visibility="invisible" />
+
+
+
+        <Button
+            android:id="@+id/button9"
+            android:layout_width="55dp"
+            android:layout_height="90dp"
+            android:translationX="210dp"
+            android:translationY="330dp"
+            android:visibility="invisible" />
+
+        <Button
+            android:id="@+id/teachersLounge"
+            android:layout_width="60dp"
+            android:layout_height="50dp"
+            android:translationX="205dp"
+            android:translationY="270dp"
+            android:visibility="invisible" />
+
+
+
     </FrameLayout>
 
 
