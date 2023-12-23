@@ -18,14 +18,15 @@
             android:layout_height="35dp"
             android:translationX="118dp"
             android:translationY="6dp"
-            android:visibility="invisible" />
+            android:background="@color/Transparent" />
         <Button
             android:id="@+id/building600Part2"
             android:layout_width="20dp"
             android:layout_height="170dp"
             android:translationX="245dp"
             android:translationY="10dp"
-            android:visibility="invisible" />
+            android:background="@color/Transparent"
+            android:onClick="showCastume"/>
 
         <Button
             android:id="@+id/building500"
@@ -33,7 +34,9 @@
             android:layout_height="45dp"
             android:translationX="50dp"
             android:translationY="90dp"
-            android:visibility="invisible" />
+            android:onClick="alert"
+            android:background="@color/Transparent"
+            />
 
         <Button
             android:id="@+id/building400"
@@ -41,7 +44,7 @@
             android:layout_height="45dp"
             android:translationX="47dp"
             android:translationY="200dp"
-            android:visibility="invisible" />
+            android:background="@color/Transparent"/>
 
         <Button
             android:id="@+id/building300"
@@ -49,7 +52,7 @@
             android:layout_height="45dp"
             android:translationX="47dp"
             android:translationY="294dp"
-            android:visibility="invisible" />
+            android:background="@color/Transparent" />
 
         <Button
             android:id="@+id/building200"
@@ -57,7 +60,7 @@
             android:layout_height="45dp"
             android:translationX="47dp"
             android:translationY="380dp"
-            android:visibility="invisible" />
+            android:background="@color/Transparent" />
 
         <Button
             android:id="@+id/building100"
@@ -65,7 +68,7 @@
             android:layout_height="45dp"
             android:translationX="50dp"
             android:translationY="472dp"
-            android:visibility="invisible" />
+            android:background="@color/Transparent" />
 
         <Button
             android:id="@+id/SportsHall"
@@ -73,7 +76,7 @@
             android:layout_height="79dp"
             android:translationX="35dp"
             android:translationY="620dp"
-            android:visibility="invisible" />
+            android:background="@color/Transparent" />
 
 
 
@@ -83,7 +86,7 @@
             android:layout_height="90dp"
             android:translationX="210dp"
             android:translationY="330dp"
-            android:visibility="invisible" />
+            android:background="@color/Transparent" />
 
         <Button
             android:id="@+id/teachersLounge"
@@ -91,7 +94,7 @@
             android:layout_height="50dp"
             android:translationX="205dp"
             android:translationY="270dp"
-            android:visibility="invisible" />
+            android:background="@color/Transparent" />
 
 
 

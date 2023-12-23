@@ -116,4 +116,5 @@ public class Profile extends Fragment {
         startActivity(intent);
         requireActivity().finish(); // Finish the current activity or fragment
     }
+
 }
