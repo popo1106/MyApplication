@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,8 +18,13 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Home extends Fragment {
     Button button;
@@ -46,7 +52,7 @@ public class Home extends Fragment {
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(true);
         dialog.setContentView(R.layout.activity_alert_dialog);
-        final EditText nameEt = dialog.findViewById(R.id.userName);
+        EditText nameEt = dialog.findViewById(R.id.description);
         final CheckBox terms = dialog.findViewById(R.id.terms_cb);
         createSpinner(dialog);
         numberSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -54,8 +60,6 @@ public class Home extends Fragment {
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
                 // Get the selected number from the Spinner
                 String selectedNumber = adapter.getItem(position);
-
-                // Convert the selected number to an integer if needed
                 selectedInt = Integer.parseInt(selectedNumber);
 
             }
@@ -68,10 +72,29 @@ public class Home extends Fragment {
         });
         Button sumbit = dialog.findViewById(R.id.send);
         sumbit.setOnClickListener(view1 -> {
-            Toast.makeText(requireContext(), "Positive", Toast.LENGTH_SHORT).show();
 
-            dialog.dismiss();
+            String userName = nameEt.getText().toString();
+
+            if (!userName.isEmpty()) {
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("task").child(String.valueOf(selectedInt));
+
+                Map<String, Object> childData = new HashMap<>();
+                childData.put("Description", userName);
+                databaseReference.setValue(childData)
+                        .addOnSuccessListener(aVoid -> {
+                            Toast.makeText(requireContext(), "Data saved to Firebase", Toast.LENGTH_SHORT).show();
+                            // Handle success, if needed
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(requireContext(), "Failed to save data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            // Handle failure, if needed
+                        });
+                dialog.dismiss();
+            } else {
+                Toast.makeText(requireContext(), "Please enter a name", Toast.LENGTH_SHORT).show();
+            }
         });
+
         dialog.show();
     }
     public void createSpinner(Dialog dialog) {
