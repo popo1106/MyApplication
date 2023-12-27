@@ -3,6 +3,7 @@ package com.example.myapplication;
 import android.app.Dialog;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -18,16 +19,21 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class Home extends Fragment {
-    Button button;
+    Button button,button2,button3,button4,button5,button6,button6B;
     int selectedInt = 1500;
     Spinner numberSpinner;
     ArrayAdapter<String> adapter;
@@ -36,25 +42,67 @@ public class Home extends Fragment {
                              Bundle savedInstanceState) {
 
         View view=  inflater.inflate(R.layout.fragment_home, container, false);
-        button =view.findViewById(R.id.building500);
+        button =view.findViewById(R.id.building100);
+        button2 =view.findViewById(R.id.building200);
+        button3 =view.findViewById(R.id.building300);
+        button4 =view.findViewById(R.id.building400);
+        button5 =view.findViewById(R.id.building500);
+        button6 =view.findViewById(R.id.building600);
+        button6B =view.findViewById(R.id.building600Part2);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showAlertDialog();
+                showAlertDialog(100);
+            }
+        });
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showAlertDialog(2000);
+            }
+        });
+        button3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showAlertDialog(300);
+            }
+        });
+        button4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showAlertDialog(400);
+            }
+        });
+        button5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showAlertDialog(500);
+            }
+        });
+        button6.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showAlertDialog(600);
+            }
+        });
+        button6B.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showAlertDialog(600);
             }
         });
         return view;
     }
 
-    private void showAlertDialog() {
+    private void showAlertDialog(int building) {
 
         final Dialog dialog = new Dialog(requireContext());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(true);
         dialog.setContentView(R.layout.activity_alert_dialog);
-        EditText nameEt = dialog.findViewById(R.id.description);
+        EditText descriptionEt = dialog.findViewById(R.id.description);
         final CheckBox terms = dialog.findViewById(R.id.terms_cb);
-        createSpinner(dialog);
+        createSpinner(dialog,building);
         numberSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
@@ -73,37 +121,64 @@ public class Home extends Fragment {
         Button sumbit = dialog.findViewById(R.id.send);
         sumbit.setOnClickListener(view1 -> {
 
-            String userName = nameEt.getText().toString();
-
-            if (!userName.isEmpty()) {
+            String description = descriptionEt.getText().toString();
+            if (!description.isEmpty()) {
                 DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("task").child(String.valueOf(selectedInt));
+// Get the current date and time
+                LocalDateTime now = LocalDateTime.now();
 
-                Map<String, Object> childData = new HashMap<>();
-                childData.put("Description", userName);
-                databaseReference.setValue(childData)
-                        .addOnSuccessListener(aVoid -> {
-                            Toast.makeText(requireContext(), "Data saved to Firebase", Toast.LENGTH_SHORT).show();
-                            // Handle success, if needed
-                        })
-                        .addOnFailureListener(e -> {
-                            Toast.makeText(requireContext(), "Failed to save data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                            // Handle failure, if needed
-                        });
-                dialog.dismiss();
-            } else {
-                Toast.makeText(requireContext(), "Please enter a name", Toast.LENGTH_SHORT).show();
+// Format the date and time as per your requirement
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy, HH:mm:ss"); // Customize the format
+                String formattedDateTime = now.format(formatter);
+
+                databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        long taskCount = dataSnapshot.getChildrenCount(); // Get the count of existing tasks
+                        String taskId;
+
+                        if (taskCount == 0) {
+                            taskId = "1"; // If no tasks exist, start from 1
+                        } else {
+                            // Get the last task's key and increment by 1 for the new taskId
+                            long nextTaskId = taskCount + 1;
+                            taskId = String.valueOf(nextTaskId);
+                        }
+                        // Create a HashMap to store the task data
+                        Map<String, Object> newTask = new HashMap<>();
+                        newTask.put("Description", description);
+                        newTask.put("time", formattedDateTime);
+
+                        // Push the new task to the Firebase database under "Number-class"
+                        databaseReference.child(taskId).setValue(newTask)
+                                .addOnSuccessListener(aVoid -> {
+                                    Toast.makeText(requireContext(), "Data saved to Firebase", Toast.LENGTH_SHORT).show();
+                                })
+                                .addOnFailureListener(e -> {
+                                    Toast.makeText(requireContext(), "Failed to save data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                });
+                        dialog.dismiss();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        // Handle error
+                    }
+                });
+            }else {
+                Toast.makeText(requireContext(), "Please enter a description", Toast.LENGTH_SHORT).show();
             }
         });
 
         dialog.show();
     }
-    public void createSpinner(Dialog dialog) {
+    public void createSpinner(Dialog dialog, int building) {
         numberSpinner = dialog.findViewById(R.id.spinner_class);
 
         // Create a list of numbers from 0 to 16
         List<String> numbers = new ArrayList<>();
         for (int i = 0; i <= 16; i++) {
-            numbers.add(String.valueOf(i));
+            numbers.add(String.valueOf(building+i));
         }
 
         // Create an ArrayAdapter using the list of numbers
