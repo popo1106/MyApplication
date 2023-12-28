@@ -36,12 +36,15 @@ public class Home extends Fragment {
     Button button,button2,button3,button4,button5,button6,button6B;
     int selectedInt = 1500;
     Spinner numberSpinner;
+    String name;
     ArrayAdapter<String> adapter;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View view=  inflater.inflate(R.layout.fragment_home, container, false);
+        Bundle bundle = this.getArguments();
+        name = bundle.getString("name");
         button =view.findViewById(R.id.building100);
         button2 =view.findViewById(R.id.building200);
         button3 =view.findViewById(R.id.building300);
@@ -148,6 +151,7 @@ public class Home extends Fragment {
                         Map<String, Object> newTask = new HashMap<>();
                         newTask.put("Description", description);
                         newTask.put("time", formattedDateTime);
+                        newTask.put("name", name);
 
                         // Push the new task to the Firebase database under "Number-class"
                         databaseReference.child(taskId).setValue(newTask)

@@ -41,6 +41,9 @@ public class MainActivity2 extends AppCompatActivity {
         Intent intent = getIntent();
         name = intent.getStringExtra("name");
         password = intent.getStringExtra("password");
+        Bundle bundle2 = new Bundle();
+        bundle2.putString("name",name);
+        home.setArguments(bundle2);
         getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, home).commit();
         BNV = findViewById(R.id.bottomNavigation);
         BNV.setSelectedItemId(R.id.bottom_home);
@@ -48,6 +51,9 @@ public class MainActivity2 extends AppCompatActivity {
         BNV.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.bottom_home) {
+                Bundle bundle1 = new Bundle();
+                bundle1.putString("name",name);
+                home.setArguments(bundle1);
                 getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, home).commit();
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 return true;
