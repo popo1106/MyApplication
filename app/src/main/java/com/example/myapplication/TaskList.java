@@ -68,8 +68,10 @@ public class TaskList extends Fragment {
                             String imageUrl = itemSnapshot2.child("imageUrl").getValue(String.class);
                             String name = itemSnapshot2.child("name").getValue(String.class);
                             String time = itemSnapshot2.child("time").getValue(String.class);
+
                             // Create a DataClass object
                             DataClass dataClass = new DataClass(name, description, time, imageUrl,itemSnapshot.getKey().toString());
+                            dataClass.setKey(itemSnapshot.getKey().toString()+"-"+itemSnapshot2.getKey().toString());
                             dataList.add(dataClass);
 
                             // Now, you can use the dataClass object as needed

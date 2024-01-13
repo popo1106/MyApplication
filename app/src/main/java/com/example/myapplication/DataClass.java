@@ -8,7 +8,15 @@ public class DataClass {
     private String time;
     private String imageUrl;
     private String NumClass;
+    private String key;
 
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
 
     public DataClass(String userName, String description, String time, String imageUrl, String NumClass) {
         this.userName = userName;
