@@ -21,4 +21,6 @@
     <color name="grey">#d2d2d2</color>
     <color name="light_grey">#9E9E9E</color>
     <color name="Transparent">#00FFFFFF</color>
+    <color name="red">#c70000</color>
+    <color name="green">#00ff00</color>
 </resources>

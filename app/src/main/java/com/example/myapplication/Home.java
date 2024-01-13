@@ -52,8 +52,9 @@ public class Home extends Fragment {
     String name;
     ArrayAdapter<String> adapter;
     Uri selectedImageUri,stImage;
-
-
+    String imageUrl;
+    String description;
+    String formattedDateTime;
     int flagImage;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -147,12 +148,12 @@ public class Home extends Fragment {
         Button sumbit = dialog.findViewById(R.id.send);
 
         sumbit.setOnClickListener(view1 -> {
-            String description = descriptionEt.getText().toString();
+            description = descriptionEt.getText().toString();
             if (!description.isEmpty()) {
                 DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("task").child(String.valueOf(selectedInt));
                 LocalDateTime now = LocalDateTime.now();
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy, HH:mm:ss");
-                String formattedDateTime = now.format(formatter);
+                formattedDateTime = now.format(formatter);
 
                 // Create a HashMap to store the task data
                 Map<String, Object> newTask = new HashMap<>();
@@ -175,6 +176,7 @@ public class Home extends Fragment {
         });
 
         dialog.show();
+        uploadData();
     }
     public void createSpinner(Dialog dialog, int building) {
         numberSpinner = dialog.findViewById(R.id.spinner_class);
@@ -203,6 +205,7 @@ public class Home extends Fragment {
                 .addOnSuccessListener(taskSnapshot -> {
                     imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                         newTask.put("imageUrl", uri.toString());
+                        imageUrl = uri.toString();
                         saveTaskToFirebase(newTask, databaseReference, dialog);
                     });
                 })
@@ -277,5 +280,10 @@ public class Home extends Fragment {
                 Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+    public void uploadData()
+    {
+
+        DataClass dataClass = new DataClass(name,description,formattedDateTime,imageUrl);
     }
 }
