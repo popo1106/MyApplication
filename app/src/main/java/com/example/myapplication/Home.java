@@ -284,6 +284,6 @@ public class Home extends Fragment {
     public void uploadData()
     {
 
-        DataClass dataClass = new DataClass(name,description,formattedDateTime,imageUrl);
+        DataClass dataClass = new DataClass(name,description,formattedDateTime,imageUrl,String.valueOf(selectedInt));
     }
 }

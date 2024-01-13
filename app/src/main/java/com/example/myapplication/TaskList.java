@@ -62,16 +62,14 @@ public class TaskList extends Fragment {
                     for (DataSnapshot itemSnapshot2 : itemSnapshot.getChildren()) {
                         if (itemSnapshot2.getValue() != null) {
                             // Accessing the second element of the array
-                            //DataSnapshot secondElement = itemSnapshot2.child("0");
 
                             // Extracting values
                             String description = itemSnapshot2.child("Description").getValue(String.class);
                             String imageUrl = itemSnapshot2.child("imageUrl").getValue(String.class);
                             String name = itemSnapshot2.child("name").getValue(String.class);
                             String time = itemSnapshot2.child("time").getValue(String.class);
-
                             // Create a DataClass object
-                            DataClass dataClass = new DataClass(name, description, time, imageUrl);
+                            DataClass dataClass = new DataClass(name, description, time, imageUrl,itemSnapshot.getKey().toString());
                             dataList.add(dataClass);
 
                             // Now, you can use the dataClass object as needed

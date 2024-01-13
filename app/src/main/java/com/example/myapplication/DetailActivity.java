@@ -26,10 +26,14 @@ public class DetailActivity extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             detailDesc.setText(bundle.getString("Description"));
-//            detailTitle.setText(bundle.getString("Title"));
+            detailTitle.setText("class: " +bundle.getString("NumClass"));
             detailLang.setText(bundle.getString("Time"));
 //            imageUrl = bundle.getString("Image");
-            Glide.with(this).load(bundle.getString("Image")).into(detailImage);
+            if(!bundle.getString("Image").equals("dont use image"))
+            {
+                Glide.with(this).load(bundle.getString("Image")).into(detailImage);
+            }
+
         }
     }
 }

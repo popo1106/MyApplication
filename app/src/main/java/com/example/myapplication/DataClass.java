@@ -7,23 +7,23 @@ public class DataClass {
     private String Description;
     private String time;
     private String imageUrl;
-    private int NumClass;
+    private String NumClass;
 
 
-    public DataClass(String userName, String description, String time, String imageUrl) {
+    public DataClass(String userName, String description, String time, String imageUrl, String NumClass) {
         this.userName = userName;
         this.Description = description;
         this.time = time;
         this.imageUrl = imageUrl;
-//        this.NumClass = NumClass;
+        this.NumClass = NumClass;
     }
 
     public String getUserName() {
         return userName;
     }
-//    public int getNumClass() {
-//        return NumClass;
-//    }
+    public String getNumClass() {
+        return NumClass;
+    }
 
 
 
