@@ -1,7 +1,6 @@
 package com.example.myapplication;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -68,7 +67,6 @@ public class DetailActivity extends AppCompatActivity {
                         Toast.makeText(DetailActivity.this, "Deleted", Toast.LENGTH_SHORT).show();
                         //getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout,TL).commit();
                         finish();
-                        Log.e("nnn","llll");
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
