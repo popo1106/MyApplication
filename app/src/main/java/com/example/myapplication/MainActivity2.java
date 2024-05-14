@@ -33,7 +33,13 @@ public class MainActivity2 extends AppCompatActivity {
             user = (User) getIntent().getSerializableExtra("user");
         }
         toolbar = findViewById(R.id.toolbar);
+
         setSupportActionBar(toolbar);
+//        if(!(user.getLevel().equals("מנהל/ת")))
+//        {
+//            getSupportActionBar().hide();
+//
+//        }
         Bundle bundle2 = new Bundle();
         bundle2.putString("name",user.getUserName());
         home.setArguments(bundle2);
@@ -74,6 +80,7 @@ public class MainActivity2 extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.manager_menu, menu);
         return true;
     }
+
 
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();

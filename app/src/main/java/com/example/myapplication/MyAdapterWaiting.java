@@ -52,9 +52,12 @@ public class MyAdapterWaiting extends RecyclerView.Adapter<MyViewHolderWaiting>{
                 if (currentPosition != RecyclerView.NO_POSITION) {
                     waitingCardAp currentCard = dataList.get(currentPosition);
                     String key = currentCard.getKey();
+                    String[] keyParts = key.split("@");
+                    String role = keyParts[0];
+                    String id = keyParts[1];
                     // Remove the item from the database
                     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Waiting-list").child("640037");
-                    databaseReference.child(key).removeValue();
+                    databaseReference.child(role).child(id).removeValue();
                     // Remove the item from the list and notify the adapter
                     dataList.remove(currentPosition);
                     notifyItemRemoved(currentPosition);
@@ -69,11 +72,11 @@ public class MyAdapterWaiting extends RecyclerView.Adapter<MyViewHolderWaiting>{
                 if (currentPosition != RecyclerView.NO_POSITION) {
                     waitingCardAp currentCard = dataList.get(currentPosition);
                     String key = currentCard.getKey();
-                    String[] keyParts = key.split("/");
+                    String[] keyParts = key.split("@");
                     String role = keyParts[0];
                     String id = keyParts[1];
                     // Reference to the waiting list item
-                    DatabaseReference waitingListRef = FirebaseDatabase.getInstance().getReference("Waiting-list").child("640037").child(key);
+                    DatabaseReference waitingListRef = FirebaseDatabase.getInstance().getReference("Waiting-list").child("640037").child(role).child(id);
                     // Reference to the organization list
                     DatabaseReference organizationRef = FirebaseDatabase.getInstance().getReference("organization").child("640037").child(role).child(id);
 

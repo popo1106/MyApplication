@@ -110,7 +110,7 @@ public class Signup extends AppCompatActivity {
         // Create a list for spinner2 data
         List<String> levelList = new ArrayList<>();
         levelList.add("מורה");
-        levelList.add("מנהל/ת");
+        levelList.add("מנהל-ת");
         levelList.add("אב-בית");
 
         // Create an ArrayAdapter and set it to spinner2

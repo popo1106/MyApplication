@@ -33,7 +33,6 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     Spinner spinner2;
-    ArrayList<String> Role = new ArrayList<>();
     SharedPreferences sp;
     SharedPreferences.Editor editor;
     ToggleButton togglePassword;
@@ -74,9 +73,7 @@ public class MainActivity extends AppCompatActivity {
         togglePassword.setTextOn(null);
         firebaseAuth = FirebaseAuth.getInstance();
         databaseReference = FirebaseDatabase.getInstance().getReference().child("organization").child("640037");
-        Role.add("מנהל/ת");
-        Role.add("אב-בית");
-        Role.add("מורה");
+
 
     }
     @Override
@@ -88,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
         spinner2 = findViewById(R.id.spinner_level);
         List<String> levelList = new ArrayList<>();
             levelList.add("מורה");
-            levelList.add("מנהל/ת");
+            levelList.add("מנהל-ת");
             levelList.add("אב-בית");
 
         // Create an ArrayAdapter and set it to spinner2
@@ -117,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
                                         if (task.isSuccessful()) {
                                             // Sign in success
                                             Toast.makeText(MainActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
-                                            User userD = new User(userSnapshot.child("name").getValue(String.class), "", "", Role.indexOf(role), "640037");
+                                            User userD = new User(userSnapshot.child("name").getValue(String.class), "", userId.getText().toString().trim(), role, "640037");
                                             Intent intent = new Intent(MainActivity.this,MainActivity2.class);
                                             intent.putExtra("user", userD);
                                             startActivity(intent);

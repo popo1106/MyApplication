@@ -7,11 +7,11 @@ public class User implements Serializable {
     private String userName;
     private String phoneNum;
     private String idUser;
-    private int level;
+    private String level;
     private String org;
 
 
-    public User(String userName, String phoneNum, String idUser, int level, String org) {
+    public User(String userName, String phoneNum, String idUser, String level, String org) {
         this.userName = userName;
         this.phoneNum = phoneNum;
         this.idUser = idUser;
@@ -35,11 +35,11 @@ public class User implements Serializable {
         this.org = org;
     }
 
-    public int getLevel() {
+    public String getLevel() {
         return level;
     }
 
-    public void setLevel(int level) {
+    public void setLevel(String level) {
         this.level = level;
     }
 

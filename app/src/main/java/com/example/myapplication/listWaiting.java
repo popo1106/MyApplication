@@ -7,6 +7,7 @@ import android.app.AlertDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,6 +33,7 @@ public class listWaiting extends AppCompatActivity {
     private ValueEventListener eventListener;
     private AlertDialog dialog;
     private ImageView deleteButton;
+    private TextView emptyView;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -39,7 +41,7 @@ public class listWaiting extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_waiting);
         recyclerView = findViewById(R.id.recyclerViewWaiting);
-
+        emptyView = findViewById(R.id.emptyView);
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 1);
 
@@ -50,7 +52,6 @@ public class listWaiting extends AppCompatActivity {
         builder.setView(R.layout.progress_layout);
         dialog = builder.create();
         dialog.show();
-
         dataList = new ArrayList<>();
         adapter = new MyAdapterWaiting(this, dataList);
         recyclerView.setAdapter(adapter);
@@ -60,6 +61,7 @@ public class listWaiting extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 dataList.clear();// Clear the list before adding new data
+
                 // Iterate through each role
                 for (DataSnapshot roleSnapshot : dataSnapshot.getChildren()) {
                     String role = roleSnapshot.getKey(); // Get the role name
@@ -76,14 +78,13 @@ public class listWaiting extends AppCompatActivity {
                             }
                         }
 
-
                         // Extract desired data (name, idUser, email, time)
                         String name = userData.get("name");
                         String idUser = userData.get("Id");
                         String email = userData.get("email");
                         String time = userData.get("time");
                         waitingCardAp waitingCard = new waitingCardAp("שם: "+name, "תפקיד: "+role, "תאריך: "+time,"תז: "+idUser);
-                        waitingCard.setKey(role + "/" + id);
+                        waitingCard.setKey(role + "@" + id);
 
                         dataList.add(waitingCard);
                         // Print or use the extracted data as needed
@@ -91,6 +92,13 @@ public class listWaiting extends AppCompatActivity {
                 }
                 adapter.notifyDataSetChanged();
                 dialog.dismiss();
+//                if (dataList.isEmpty()) {
+//                    emptyView.setVisibility(View.VISIBLE);
+//                    recyclerView.setVisibility(View.GONE);
+//                } else {
+//                    emptyView.setVisibility(View.GONE);
+//                    recyclerView.setVisibility(View.VISIBLE);
+//                }
             }
 
             @Override
