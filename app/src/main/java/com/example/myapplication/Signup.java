@@ -25,9 +25,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class Signup extends AppCompatActivity {
@@ -175,16 +179,23 @@ public class Signup extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     // Sign-up successful, continue with adding user data to database
-                    DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("organization")
+                    DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("Waiting-list")
                             .child(selectedValue) // Add user under selected organization
                             .child(selectedValue2) // Add user under selected level
                             .push(); // Push user data with a unique ID
+                    Calendar calendar = Calendar.getInstance();
 
+                    // Get the current date in Date object
+                    Date date = calendar.getTime();
+
+                    // Format the date into string
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
                     // Create a HashMap to store user data
                     Map<String, Object> userData = new HashMap<>();
                     userData.put("name", name);
                     userData.put("Id", Id);
                     userData.put("email", email);
+                    userData.put("time", dateFormat.format(date));
                     // Add other user data as needed
 
                     // Push user data to the database

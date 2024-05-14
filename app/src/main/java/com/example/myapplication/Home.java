@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -74,9 +75,14 @@ public class Home extends Fragment {
         button6 =view.findViewById(R.id.building600);
         button6B =view.findViewById(R.id.building600Part2);
         button.setOnClickListener(new View.OnClickListener() {
+
             @Override
+
             public void onClick(View view) {
-                showAlertDialog(100);
+                Log.e("lll2","popo1");
+                Intent intent = new Intent(getActivity(), listWaiting.class);
+                startActivity(intent);
+//                showAlertDialog(100);
             }
         });
         button2.setOnClickListener(new View.OnClickListener() {

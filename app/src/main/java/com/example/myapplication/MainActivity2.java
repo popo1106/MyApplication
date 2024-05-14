@@ -1,25 +1,15 @@
 package com.example.myapplication;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.annotation.SuppressLint;
-import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -30,6 +20,10 @@ public class MainActivity2 extends AppCompatActivity {
     Home home = new Home();
     SharedPreferences sp;
     BottomNavigationView BNV;
+    User user;
+
+
+
 
 
     String name;
@@ -38,11 +32,11 @@ public class MainActivity2 extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
-        Intent intent = getIntent();
-        name = intent.getStringExtra("name");
-        password = intent.getStringExtra("password");
+        if(getIntent().getExtras() != null) {
+            user = (User) getIntent().getSerializableExtra("user");
+        }
         Bundle bundle2 = new Bundle();
-        bundle2.putString("name",name);
+        bundle2.putString("name",user.getUserName());
         home.setArguments(bundle2);
         getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, home).commit();
         BNV = findViewById(R.id.bottomNavigation);
@@ -52,7 +46,7 @@ public class MainActivity2 extends AppCompatActivity {
             int id = item.getItemId();
             if (id == R.id.bottom_home) {
                 Bundle bundle1 = new Bundle();
-                bundle1.putString("name",name);
+                bundle1.putString("name",user.getUserName());
                 home.setArguments(bundle1);
                 getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, home).commit();
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
@@ -60,7 +54,7 @@ public class MainActivity2 extends AppCompatActivity {
 
             }else if (id == R.id.bottom_profile) {
                 Bundle bundle1 = new Bundle();
-                bundle1.putString("name",name);
+                bundle1.putString("name",user.getUserName());
                 bundle1.putString("password",password);
                 profile.setArguments(bundle1);
                 getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, profile).commit();
@@ -76,7 +70,21 @@ public class MainActivity2 extends AppCompatActivity {
             return false;
         });
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.manager_menu, menu);
+        return true;
+    }
 
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if(id == R.id.waitingList)
+        {
+            Toast.makeText(this,"k0k", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
     public void logout(View view) {
         sp = getSharedPreferences("checkBox",MODE_PRIVATE);
         sp = getSharedPreferences("checkBox",MODE_PRIVATE);

@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
@@ -31,8 +33,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    Spinner spinner2;
 
+    Spinner spinner2;
+    ArrayList<String> Role = new ArrayList<>();
     SharedPreferences sp;
     SharedPreferences.Editor editor;
     ToggleButton togglePassword;
@@ -41,7 +44,21 @@ public class MainActivity extends AppCompatActivity {
     EditText userId, UserPassword;
     TextView tv,signup;
     CheckBox remember;
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.manager_menu, menu);
+        return true;
+    }
 
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if(id == R.id.waitingList)
+        {
+            Toast.makeText(this,"k0k", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +90,10 @@ public class MainActivity extends AppCompatActivity {
         togglePassword.setTextOn(null);
         firebaseAuth = FirebaseAuth.getInstance();
         databaseReference = FirebaseDatabase.getInstance().getReference().child("organization").child("640037");
+        Role.add("מנהל/ת");
+        Role.add("אב-בית");
+        Role.add("מורה");
+
     }
     @Override
     protected void onStart() {
@@ -112,7 +133,12 @@ public class MainActivity extends AppCompatActivity {
                                         if (task.isSuccessful()) {
                                             // Sign in success
                                             Toast.makeText(MainActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
-                                            startActivity(new Intent(MainActivity.this, MainActivity2.class));
+                                            User userD = new User(userSnapshot.child("name").getValue(String.class), "", "", Role.indexOf(role), "640037");
+                                            Intent intent = new Intent(MainActivity.this,MainActivity2.class);
+                                            intent.putExtra("user", userD);
+                                            startActivity(intent);
+
+                                            //startActivity(new Intent(MainActivity.this, MainActivity2.class));
                                             // Proceed to next activity or perform desired action
                                         } else {
                                             // Other authentication failures
@@ -139,7 +165,50 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    private void checkInWaitingList(final String Id, final String password) {
+        String role = spinner2.getSelectedItem().toString();
+        // Query the Realtime Database to find the user with the provided username
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference().child("Waiting-list").child("640037").child(role);
+        usersRef.orderByChild("Id").equalTo(Id).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    // If the username exists, retrieve the email
+                    for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                        String email = userSnapshot.child("email").getValue(String.class);
+                        // Authenticate user with retrieved email and password
+                        firebaseAuth.signInWithEmailAndPassword(email, password)
+                                .addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<AuthResult> task) {
+                                        if (task.isSuccessful()) {
+                                            // Sign in success
+                                            Toast.makeText(MainActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
+                                            startActivity(new Intent(MainActivity.this, WaitingScreen.class));
+                                            // Proceed to next activity or perform desired action
+                                        } else {
+                                            // Other authentication failures
+                                            //Toast.makeText(MainActivity.this, "pasword not found.", Toast.LENGTH_SHORT).show();
+                                            //UserPassword.setError("סיסמה לא נכונה");
 
+                                        }
+                                    }
+                                });
+
+                    }
+                } else {
+                    // If the username does not exist in the database
+                    //userId.setError("תעודת זהות לא נמצאה");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle database error
+                Toast.makeText(MainActivity.this, "Database error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
     public void TogglePassword(View view) {
         if (UserPassword.getInputType() == InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD) {
@@ -171,6 +240,7 @@ public class MainActivity extends AppCompatActivity {
             userId.setError("התעודת זהות לא יכולה להיות ריקה");
         }
         if(!(pass.isEmpty()||id.isEmpty())) {
+            checkInWaitingList(id, pass);
             getEmailForUsername(id, pass);
         }
     }
