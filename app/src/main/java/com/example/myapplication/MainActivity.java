@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
@@ -44,21 +42,7 @@ public class MainActivity extends AppCompatActivity {
     EditText userId, UserPassword;
     TextView tv,signup;
     CheckBox remember;
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.manager_menu, menu);
-        return true;
-    }
 
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        if(id == R.id.waitingList)
-        {
-            Toast.makeText(this,"k0k", Toast.LENGTH_SHORT).show();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -9,7 +9,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,6 +57,7 @@ public class Home extends Fragment {
     String formattedDateTime;
     int flagImage;
     @Override
+
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
@@ -79,16 +79,13 @@ public class Home extends Fragment {
             @Override
 
             public void onClick(View view) {
-                Log.e("lll2","popo1");
-                Intent intent = new Intent(getActivity(), listWaiting.class);
-                startActivity(intent);
-//                showAlertDialog(100);
+                showAlertDialog(100);
             }
         });
         button2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showAlertDialog(2000);
+                showAlertDialog(200);
             }
         });
         button3.setOnClickListener(new View.OnClickListener() {
@@ -292,4 +289,6 @@ public class Home extends Fragment {
 
         DataClass dataClass = new DataClass(name,description,formattedDateTime,imageUrl,String.valueOf(selectedInt));
     }
+
+
 }

@@ -6,13 +6,12 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
 public class MainActivity2 extends AppCompatActivity {
     SharedPreferences.Editor editor;
     Profile profile = new Profile();
@@ -21,9 +20,7 @@ public class MainActivity2 extends AppCompatActivity {
     SharedPreferences sp;
     BottomNavigationView BNV;
     User user;
-
-
-
+    Toolbar toolbar;
 
 
     String name;
@@ -35,6 +32,8 @@ public class MainActivity2 extends AppCompatActivity {
         if(getIntent().getExtras() != null) {
             user = (User) getIntent().getSerializableExtra("user");
         }
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         Bundle bundle2 = new Bundle();
         bundle2.putString("name",user.getUserName());
         home.setArguments(bundle2);
@@ -80,7 +79,8 @@ public class MainActivity2 extends AppCompatActivity {
         int id = item.getItemId();
         if(id == R.id.waitingList)
         {
-            Toast.makeText(this,"k0k", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, listWaiting.class);
+            startActivity(intent);
             return true;
         }
         return super.onOptionsItemSelected(item);

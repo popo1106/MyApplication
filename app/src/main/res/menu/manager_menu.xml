@@ -2,11 +2,20 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/waitingList"
-        android:title="waiting List"
-        app:showAsAction="never"
-        android:orderInCategory="100"
-        android:icon="@drawable/checklisticon"
-        />
+        android:title=""
+        app:showAsAction="always"
+        android:icon="@drawable/menuicon"
+        >
+
+        <menu>
+            <item
+                android:id="@+id/waitingList"
+                android:title="waiting List"
+                app:showAsAction="never"
+                android:icon="@drawable/checklisticon"
+                />
+
+        </menu>
+    </item>
 
 </menu>
