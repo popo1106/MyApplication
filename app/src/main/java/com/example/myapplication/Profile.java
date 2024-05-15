@@ -51,6 +51,7 @@ public class Profile extends Fragment {
 //        }
         userName.setText(name);
         email.setText(user.getEmail());
+        idUser.setText(user.getIdUser());
         logout = view.findViewById(R.id.logoutIv);
 
         logout.setOnClickListener(new View.OnClickListener() {

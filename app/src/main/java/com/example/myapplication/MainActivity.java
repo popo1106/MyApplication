@@ -32,14 +32,14 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    Spinner spinner2;
+    Spinner spinner2,orgSpinner;
     SharedPreferences sp;
     SharedPreferences.Editor editor;
     ToggleButton togglePassword;
     private FirebaseAuth firebaseAuth;
     private DatabaseReference databaseReference;
     EditText userId, UserPassword;
-    TextView tv,signup;
+    TextView signup;
     CheckBox remember;
 
     @Override
@@ -67,7 +67,6 @@ public class MainActivity extends AppCompatActivity {
         signup = findViewById(R.id.signUpRedirectText);
         UserPassword = findViewById(R.id.passwordET);
         remember = findViewById(R.id.remember);
-        tv = findViewById(R.id.error);
         togglePassword = findViewById(R.id.togglePassword);
         togglePassword.setTextOff(null);
         togglePassword.setTextOn(null);
@@ -83,6 +82,9 @@ public class MainActivity extends AppCompatActivity {
     }
     public void createSpinner() {
         spinner2 = findViewById(R.id.spinner_level);
+        orgSpinner = findViewById(R.id.spinner_org);
+        List<String> orgList = new ArrayList<>();
+
         List<String> levelList = new ArrayList<>();
             levelList.add("מורה");
             levelList.add("מנהל-ת");
@@ -92,6 +94,32 @@ public class MainActivity extends AppCompatActivity {
         ArrayAdapter<String> adapter2 = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_spinner_item, levelList);
             adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinner2.setAdapter(adapter2);
+
+        ArrayAdapter<String> orgAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, orgList);
+        orgAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        orgSpinner.setAdapter(orgAdapter);
+
+        // Firebase Database reference
+        databaseReference = FirebaseDatabase.getInstance().getReference("organization");
+
+        // Fetch data from Firebase
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                orgList.clear(); // Clear the list before adding new data
+                for (DataSnapshot orgSnapshot : dataSnapshot.getChildren()) {
+                    String orgName = orgSnapshot.getKey();
+                    orgList.add(orgName);
+                }
+                orgAdapter.notifyDataSetChanged(); // Notify the adapter that data has changed
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle possible errors
+            }
+        });
+
     }
 
 
