@@ -6,6 +6,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -92,13 +93,13 @@ public class listWaiting extends AppCompatActivity {
                 }
                 adapter.notifyDataSetChanged();
                 dialog.dismiss();
-//                if (dataList.isEmpty()) {
-//                    emptyView.setVisibility(View.VISIBLE);
-//                    recyclerView.setVisibility(View.GONE);
-//                } else {
-//                    emptyView.setVisibility(View.GONE);
-//                    recyclerView.setVisibility(View.VISIBLE);
-//                }
+                if (dataList.isEmpty()) {
+                    emptyView.setVisibility(View.VISIBLE);
+                    recyclerView.setVisibility(View.GONE);
+                } else {
+                    emptyView.setVisibility(View.GONE);
+                    recyclerView.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override

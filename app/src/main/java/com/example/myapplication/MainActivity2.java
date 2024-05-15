@@ -35,13 +35,13 @@ public class MainActivity2 extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
 
         setSupportActionBar(toolbar);
-//        if(!(user.getLevel().equals("מנהל/ת")))
-//        {
-//            getSupportActionBar().hide();
-//
-//        }
+        if(!(user.getLevel().equals("מנהל-ת")))
+        {
+            getSupportActionBar().hide();
+
+        }
         Bundle bundle2 = new Bundle();
-        bundle2.putString("name",user.getUserName());
+        bundle2.putSerializable("name",user);
         home.setArguments(bundle2);
         getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, home).commit();
         BNV = findViewById(R.id.bottomNavigation);
@@ -51,7 +51,7 @@ public class MainActivity2 extends AppCompatActivity {
             int id = item.getItemId();
             if (id == R.id.bottom_home) {
                 Bundle bundle1 = new Bundle();
-                bundle1.putString("name",user.getUserName());
+                bundle1.putSerializable("name",user);
                 home.setArguments(bundle1);
                 getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, home).commit();
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
@@ -59,14 +59,16 @@ public class MainActivity2 extends AppCompatActivity {
 
             }else if (id == R.id.bottom_profile) {
                 Bundle bundle1 = new Bundle();
-                bundle1.putString("name",user.getUserName());
-                bundle1.putString("password",password);
+                bundle1.putSerializable("name",user);
                 profile.setArguments(bundle1);
                 getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, profile).commit();
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 return true;
             }
             else if (id == R.id.bottom_list) {
+                Bundle bundle1 = new Bundle();
+                bundle1.putSerializable("name",user);
+                home.setArguments(bundle1);
                 getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, TL).commit();
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 

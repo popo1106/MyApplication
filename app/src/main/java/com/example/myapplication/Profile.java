@@ -4,31 +4,27 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
-import android.text.InputType;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.ToggleButton;
-import com.google.firebase.FirebaseApp;
+
+import androidx.fragment.app.Fragment;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-
 public class Profile extends Fragment {
     BottomNavigationView BNV;
     SharedPreferences.Editor editor;
     SharedPreferences sp;
     String name;
+    User user;
     String password;
     TextView userName,passwordTv,phoneNum;
     ImageView seePassword,logout;
@@ -39,8 +35,14 @@ public class Profile extends Fragment {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference().child("Users");
         Bundle bundle = this.getArguments();
-        name = bundle.getString("name");
-        password = bundle.getString("password");
+        if(getArguments() != null) {
+            user = (User) getArguments().getSerializable("name");
+        }
+        if(user.getLevel().equals("מנהל-ת"))
+        {
+            setTopMargin(view, 35);
+        }
+        name = user.getUserName();
         userName =  view.findViewById(R.id.userName);
         if(name == null)
         {
@@ -116,5 +118,24 @@ public class Profile extends Fragment {
         startActivity(intent);
         requireActivity().finish(); // Finish the current activity or fragment
     }
+    private void setTopMargin(View view, int topMarginDp) {
+        // Convert dp to pixels
+        int topMarginPx = dpToPx(topMarginDp);
 
+        // Get LayoutParams
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+
+        if (params != null) {
+            // Set the top margin
+            params.topMargin = topMarginPx;
+
+            // Apply the LayoutParams back to the view
+            view.setLayoutParams(params);
+        }
+    }
+
+    private int dpToPx(int dp) {
+        float density = getResources().getDisplayMetrics().density;
+        return Math.round(dp * density);
+    }
 }

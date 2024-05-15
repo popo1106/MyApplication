@@ -55,6 +55,7 @@ public class Home extends Fragment {
     String imageUrl;
     String description;
     String formattedDateTime;
+    User user;
     int flagImage;
     @Override
 
@@ -63,7 +64,14 @@ public class Home extends Fragment {
 
         View view=  inflater.inflate(R.layout.fragment_home, container, false);
         Bundle bundle = this.getArguments();
-        name = bundle.getString("name");
+        if(getArguments() != null) {
+            user = (User) getArguments().getSerializable("name");
+        }
+        if(user.getLevel().equals("מנהל-ת"))
+        {
+            setTopMargin(view, 40);
+        }
+        name = user.getUserName();
         flagImage=0;
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
@@ -289,6 +297,25 @@ public class Home extends Fragment {
 
         DataClass dataClass = new DataClass(name,description,formattedDateTime,imageUrl,String.valueOf(selectedInt));
     }
+    private void setTopMargin(View view, int topMarginDp) {
+        // Convert dp to pixels
+        int topMarginPx = dpToPx(topMarginDp);
 
+        // Get LayoutParams
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+
+        if (params != null) {
+            // Set the top margin
+            params.topMargin = topMarginPx;
+
+            // Apply the LayoutParams back to the view
+            view.setLayoutParams(params);
+        }
+    }
+
+    private int dpToPx(int dp) {
+        float density = getResources().getDisplayMetrics().density;
+        return Math.round(dp * density);
+    }
 
 }

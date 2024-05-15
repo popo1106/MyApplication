@@ -24,6 +24,7 @@ import java.util.List;
 public class TaskList extends Fragment {
     RecyclerView recyclerView;
     MyAdapter adapter;
+    User user;
     List<DataClass> dataList;
     DatabaseReference databaseReference;
     ValueEventListener eventListener;
@@ -38,6 +39,7 @@ public class TaskList extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_task_list, container, false);
+
         recyclerView = view.findViewById(R.id.recyclerView);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(requireContext(), 1);
         recyclerView.setLayoutManager(gridLayoutManager);
@@ -46,7 +48,14 @@ public class TaskList extends Fragment {
         builder.setView(R.layout.progress_layout);
         AlertDialog dialog = builder.create();
         dialog.show();
-
+        Bundle bundle = this.getArguments();
+        if(getArguments() != null) {
+            user = (User) getArguments().getSerializable("name");
+        }
+        if(user.getLevel().equals("מנהל-ת"))
+        {
+            setTopMargin(view, 15);
+        }
         dataList = new ArrayList<>();
         adapter = new MyAdapter(requireContext(), dataList);
         recyclerView.setAdapter(adapter);
@@ -90,5 +99,26 @@ public class TaskList extends Fragment {
 
 
         return view;
+    }
+
+    private void setTopMargin(View view, int topMarginDp) {
+        // Convert dp to pixels
+        int topMarginPx = dpToPx(topMarginDp);
+
+        // Get LayoutParams
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+
+        if (params != null) {
+            // Set the top margin
+            params.topMargin = topMarginPx;
+
+            // Apply the LayoutParams back to the view
+            view.setLayoutParams(params);
+        }
+    }
+
+    private int dpToPx(int dp) {
+        float density = getResources().getDisplayMetrics().density;
+        return Math.round(dp * density);
     }
 }
