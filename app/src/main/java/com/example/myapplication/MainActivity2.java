@@ -68,7 +68,7 @@ public class MainActivity2 extends AppCompatActivity {
             else if (id == R.id.bottom_list) {
                 Bundle bundle1 = new Bundle();
                 bundle1.putSerializable("name",user);
-                home.setArguments(bundle1);
+                TL.setArguments(bundle1);
                 getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, TL).commit();
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 

@@ -5,15 +5,15 @@ import java.io.Serializable;
 
 public class User implements Serializable {
     private String userName;
-    private String phoneNum;
+    private String email;
     private String idUser;
     private String level;
     private String org;
 
 
-    public User(String userName, String phoneNum, String idUser, String level, String org) {
+    public User(String userName, String email, String idUser, String level, String org) {
         this.userName = userName;
-        this.phoneNum = phoneNum;
+        this.email = email;
         this.idUser = idUser;
         this.level = level;
         this.org = org;
@@ -51,12 +51,12 @@ public class User implements Serializable {
         this.idUser = idUser;
     }
 
-    public String getPhoneNum() {
-        return phoneNum;
+    public String getEmail() {
+        return email;
     }
 
-    public void setPhoneNum(String phoneNum) {
-        this.phoneNum = phoneNum;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
 }

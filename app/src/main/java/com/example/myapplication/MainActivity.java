@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
                                         if (task.isSuccessful()) {
                                             // Sign in success
                                             Toast.makeText(MainActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
-                                            User userD = new User(userSnapshot.child("name").getValue(String.class), "", userId.getText().toString().trim(), role, "640037");
+                                            User userD = new User(userSnapshot.child("name").getValue(String.class), email, userId.getText().toString().trim(), role, "640037");
                                             Intent intent = new Intent(MainActivity.this,MainActivity2.class);
                                             intent.putExtra("user", userD);
                                             startActivity(intent);

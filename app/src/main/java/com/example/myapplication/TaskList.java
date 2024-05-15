@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,13 +50,19 @@ public class TaskList extends Fragment {
         AlertDialog dialog = builder.create();
         dialog.show();
         Bundle bundle = this.getArguments();
+        Log.e("lol1","ll");
         if(getArguments() != null) {
+            Log.e("lol2","ll");
             user = (User) getArguments().getSerializable("name");
+            Log.e("lol3","ll");
         }
+        Log.e("lol4","ll");
         if(user.getLevel().equals("מנהל-ת"))
         {
+            Log.e("lol5","ll");
             setTopMargin(view, 15);
         }
+        Log.e("lol16","ll");
         dataList = new ArrayList<>();
         adapter = new MyAdapter(requireContext(), dataList);
         recyclerView.setAdapter(adapter);

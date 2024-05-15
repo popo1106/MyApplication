@@ -13,11 +13,8 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 public class Profile extends Fragment {
     BottomNavigationView BNV;
@@ -26,8 +23,8 @@ public class Profile extends Fragment {
     String name;
     User user;
     String password;
-    TextView userName,passwordTv,phoneNum;
-    ImageView seePassword,logout;
+    TextView userName,idUser,email;
+    ImageView logout;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -44,45 +41,18 @@ public class Profile extends Fragment {
         }
         name = user.getUserName();
         userName =  view.findViewById(R.id.userName);
-        if(name == null)
-        {
-            SharedPreferences sp = requireActivity().getSharedPreferences("checkBox", Context.MODE_PRIVATE);
-            name = sp.getString("name","");
-            password = sp.getString("password","");
-        }
+        email = view.findViewById(R.id.email);
+        idUser = view.findViewById(R.id.idUser);
+//        if(name == null)
+//        {
+//            SharedPreferences sp = requireActivity().getSharedPreferences("checkBox", Context.MODE_PRIVATE);
+//            name = sp.getString("name","");
+//            password = sp.getString("password","");
+//        }
         userName.setText(name);
-        seePassword = view.findViewById(R.id.seePassword);
-        passwordTv = view.findViewById(R.id.passwordTv);
-        phoneNum = view.findViewById(R.id.phoneNumber);
+        email.setText(user.getEmail());
         logout = view.findViewById(R.id.logoutIv);
-        usersRef.orderByChild("UserName").equalTo(name).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    // Get the user data
-                    String phoneNumber = snapshot.child("phoneNumber").getValue(String.class);
-                    if (phoneNumber != null) {
-                        // Phone number found for the user
-                        phoneNum.setText(phoneNumber);
-                    } else {
-                        // No phone number found for the user
-                        phoneNum.setText("No phone number has been set");
-                    }
-                }
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                // Handle errors here
-                System.out.println("Error: " + databaseError.getMessage());
-            }
-        });
-        seePassword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                togglePasswordVisibility();
-            }
-        });
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -92,18 +62,6 @@ public class Profile extends Fragment {
         return view;
     }
 
-
-    public void togglePasswordVisibility() {
-        if (!passwordTv.getText().toString().equals("******")) {
-            // If the password is currently visible, hide it
-            passwordTv.setText("******");
-            seePassword.setImageResource(R.drawable.baseline_visibility_off_24); // Change the toggle button icon
-        } else {
-            // If the password is currently hidden, show it
-            passwordTv.setText(password);
-            seePassword.setImageResource(R.drawable.baseline_visibility_24); // Change the toggle button icon
-        }
-    }
 
     private void logout() {
         SharedPreferences sp = requireActivity().getSharedPreferences("checkBox", Context.MODE_PRIVATE);
