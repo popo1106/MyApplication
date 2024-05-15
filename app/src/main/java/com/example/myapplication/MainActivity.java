@@ -71,8 +71,6 @@ public class MainActivity extends AppCompatActivity {
         togglePassword.setTextOff(null);
         togglePassword.setTextOn(null);
         firebaseAuth = FirebaseAuth.getInstance();
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("organization").child("640037");
-
 
     }
     @Override
@@ -125,8 +123,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void getEmailForUsername(final String Id, final String password) {
         String role = spinner2.getSelectedItem().toString();
+        String org = orgSpinner.getSelectedItem().toString();
         // Query the Realtime Database to find the user with the provided username
-        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference().child("organization").child("640037").child(role);
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference().child("organization").child(org).child(role);
         usersRef.orderByChild("Id").equalTo(Id).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -142,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
                                         if (task.isSuccessful()) {
                                             // Sign in success
                                             Toast.makeText(MainActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
-                                            User userD = new User(userSnapshot.child("name").getValue(String.class), email, userId.getText().toString().trim(), role, "640037");
+                                            User userD = new User(userSnapshot.child("name").getValue(String.class), email, userId.getText().toString().trim(), role, org);
                                             Intent intent = new Intent(MainActivity.this,MainActivity2.class);
                                             intent.putExtra("user", userD);
                                             startActivity(intent);
@@ -176,8 +175,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void checkInWaitingList(final String Id, final String password) {
         String role = spinner2.getSelectedItem().toString();
+        String org = orgSpinner.getSelectedItem().toString();
         // Query the Realtime Database to find the user with the provided username
-        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference().child("Waiting-list").child("640037").child(role);
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference().child("Waiting-list").child(org).child(role);
         usersRef.orderByChild("Id").equalTo(Id).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

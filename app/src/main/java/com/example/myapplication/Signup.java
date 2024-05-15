@@ -35,7 +35,7 @@ import java.util.Locale;
 import java.util.Map;
 
 public class Signup extends AppCompatActivity {
-    String selectedValue,selectedValue2;
+    String selectedValue, selectedValue2;
     private FirebaseAuth auth;
     Spinner spinner, spinner2;
     private EditText signupEmail, signupPassword, signupId, signupName;
@@ -148,8 +148,6 @@ public class Signup extends AppCompatActivity {
     }
 
 
-
-
     public void signupUser(View view) {
         String email = signupEmail.getText().toString().trim();
         String pass = signupPassword.getText().toString().trim();
@@ -172,8 +170,77 @@ public class Signup extends AppCompatActivity {
             signupId.setError("התעודת זהות לא יכולה להיות ריקה");
             return; // Return early if ID is empty
         }
+        if (Id.length()!=9||(!(isIsraeliIdNumber(Id)))){
+            signupId.setError("התעודת זהות לא תקינה");
+            return; // Return early if ID is empty
+        }
 
-        // If all fields are filled, proceed with sign-up
+        DatabaseReference waitingListRef = FirebaseDatabase.getInstance().getReference("Waiting-list");
+
+        // Check in "Waiting-list" database
+        checkIfIdExists(waitingListRef, Id,"Id", new IdCheckCallback() {
+            @Override
+            public void onIdChecked(boolean exists) {
+                if (exists) {
+                    // ID exists, show error
+                    signupId.setError("תעודת הזהות כבר קיימת במערכת");
+                } else {
+                    // ID doesn't exist in "Waiting-list", check the other database
+                    DatabaseReference otherDbRef = FirebaseDatabase.getInstance().getReference("organization");
+
+                    // Check in the other database
+                    checkIfIdExists(otherDbRef, Id,"Id", new IdCheckCallback() {
+                        @Override
+                        public void onIdChecked(boolean exists) {
+                            if (exists) {
+                                // ID exists, show error
+                                signupId.setError("תעודת הזהות כבר קיימת במערכת");
+                            } else {
+
+                                // ID doesn't exist in both databases, proceed with sign-up
+                                createUser(email, pass, name, Id);
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    private void checkIfIdExists(DatabaseReference ref, String id,String whatCheck, IdCheckCallback callback) {
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot orgSnapshot : snapshot.getChildren()) {
+                    for (DataSnapshot roleSnapshot : orgSnapshot.getChildren()) {
+                        for (DataSnapshot data : roleSnapshot.getChildren()) {
+                            String existingId = data.child("Id").getValue(String.class);
+                            if (existingId != null && existingId.equals(id)) {
+                                // ID exists, invoke callback with true
+                                callback.onIdChecked(true);
+                                return;
+                            }
+                        }
+                    }
+                }
+                // ID doesn't exist, invoke callback with false
+                callback.onIdChecked(false);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Handle onCancelled if needed
+            }
+        });
+    }
+
+    interface IdCheckCallback {
+        void onIdChecked(boolean exists);
+    }
+
+
+    private void createUser(String email, String pass, String name, String Id) {
+        // Proceed with creating the user
         auth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -219,14 +286,19 @@ public class Signup extends AppCompatActivity {
                 }
             }
         });
-
-        // Move the code for redirecting to login activity outside of the completion listener
-        loginRedirectText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(Signup.this, MainActivity.class));
-            }
-        });
     }
+    public static boolean isIsraeliIdNumber(String id) {
+        id = id.trim();
+        if (id.length() > 9 || !id.matches("\\d+")) return false;
+        id = id.length() < 9 ? ("00000000" + id).substring(id.length()) : id;
 
+        int sum = 0;
+        for (int i = 0; i < id.length(); i++) {
+            int digit = Character.getNumericValue(id.charAt(i));
+            int step = digit * ((i % 2) + 1);
+            sum += (step > 9) ? step - 9 : step;
+        }
+
+        return sum % 10 == 0;
+    }
 }

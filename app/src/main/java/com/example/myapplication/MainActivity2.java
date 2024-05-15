@@ -88,7 +88,9 @@ public class MainActivity2 extends AppCompatActivity {
         int id = item.getItemId();
         if(id == R.id.waitingList)
         {
+
             Intent intent = new Intent(this, listWaiting.class);
+            intent.putExtra("user", user);
             startActivity(intent);
             return true;
         }

@@ -28,6 +28,7 @@ import java.util.Map;
 
 public class listWaiting extends AppCompatActivity {
     private RecyclerView recyclerView;
+    User user;
     private MyAdapterWaiting adapter;
     private List<waitingCardAp> dataList;
     private DatabaseReference databaseReference;
@@ -53,10 +54,13 @@ public class listWaiting extends AppCompatActivity {
         builder.setView(R.layout.progress_layout);
         dialog = builder.create();
         dialog.show();
+        if(getIntent().getExtras() != null) {
+            user = (User) getIntent().getSerializableExtra("user");
+        }
         dataList = new ArrayList<>();
         adapter = new MyAdapterWaiting(this, dataList);
         recyclerView.setAdapter(adapter);
-        databaseReference = FirebaseDatabase.getInstance().getReference("Waiting-list").child("640037");
+        databaseReference = FirebaseDatabase.getInstance().getReference("Waiting-list").child(user.getOrg());
         dialog.show();
         eventListener = databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
