@@ -65,6 +65,7 @@ public class Home extends Fragment {
     TextView selectedOptionsTextView;
     String[] listItems;
     boolean[] checkedItems;
+    StringBuilder selectedOptions;
     ArrayList<Integer> selectedItems = new ArrayList<>();
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -170,7 +171,7 @@ public class Home extends Fragment {
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        StringBuilder selectedOptions = new StringBuilder();
+                        selectedOptions = new StringBuilder();
                         for (int i = 0; i < selectedItems.size(); i++) {
                             selectedOptions.append(listItems[selectedItems.get(i)]);
                             if (i != selectedItems.size() - 1) {
@@ -237,6 +238,7 @@ public class Home extends Fragment {
                 newTask.put("name", name);
                 newTask.put("email", user.getEmail());
                 newTask.put("role", user.getLevel());
+                newTask.put("object", selectedOptions.toString());
 
                 // Check if an image was selected
                 if (flagImage == 1) {
@@ -366,7 +368,7 @@ public class Home extends Fragment {
     public void uploadData()
     {
 
-        DataClass dataClass = new DataClass(name,description,formattedDateTime,imageUrl, role,String.valueOf(selectedInt),user);
+        DataClass dataClass = new DataClass(name,description,formattedDateTime,imageUrl, role,String.valueOf(selectedInt),user,selectedOptions.toString());
     }
     private void setTopMargin(View view, int topMarginDp) {
         // Convert dp to pixels

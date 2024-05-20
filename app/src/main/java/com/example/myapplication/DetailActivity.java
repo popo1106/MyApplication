@@ -22,7 +22,7 @@ import com.google.firebase.storage.StorageReference;
 
 public class DetailActivity extends AppCompatActivity {
 
-    TextView detailDesc, detailTitle, detailLang;
+    TextView detailDesc, detailTitle, detailLang,listObject2Fix;
     ImageView detailImage;
     TaskList TL = new TaskList();
     FloatingActionButton deleteButton;
@@ -45,12 +45,14 @@ public class DetailActivity extends AppCompatActivity {
         detailTitle = findViewById(R.id.detailTitle);
         detailLang = findViewById(R.id.detailLang);
         deleteButton = findViewById(R.id.deleteButton);
+        listObject2Fix = findViewById(R.id.listObject);
         backButton = findViewById(R.id.backIcon);
         if(getIntent().getExtras() != null) {
             detail = (DataClass) getIntent().getSerializableExtra("detail");
             detailDesc.setText(detail.getDescription());
             detailTitle.setText("class: " +detail.getNumClass());
             detailLang.setText(detail.getTime());
+            listObject2Fix.setText();
             key = detail.getKey();
             Role = detail.getRole();
             currentUser = detail.getCurrentUser();

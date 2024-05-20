@@ -148,7 +148,6 @@ public class MainActivity extends AppCompatActivity {
                                             intent.putExtra("user", userD);
                                             startActivity(intent);
 
-                                            //startActivity(new Intent(MainActivity.this, MainActivity2.class));
                                             // Proceed to next activity or perform desired action
                                         } else {
                                             // Other authentication failures

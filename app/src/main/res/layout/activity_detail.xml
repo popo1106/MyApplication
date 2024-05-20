@@ -44,11 +44,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="10dp"
+
             android:padding="20dp"
             android:text="Time:"
             android:textColor="@color/lavender"
-            android:textSize="23sp" />
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/detailLang"
@@ -58,17 +58,35 @@
             android:padding="20dp"
             android:text="Time"
             android:textColor="@color/lavender"
-            android:textSize="23sp" />
+            android:textSize="18sp" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="10dp"
+            android:padding="20dp"
+            android:text="Object:"
+            android:textColor="@color/lavender"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/listObject"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="40dp"
+            android:padding="20dp"
+            android:text="object"
+            android:textColor="@color/lavender"
+            android:textSize="18sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:padding="20dp"
             android:text="Description:"
             android:textColor="@color/lavender"
-            android:textSize="23sp" />
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/detailDesc"
@@ -79,7 +97,7 @@
             android:padding="20dp"
             android:text="Description"
             android:textColor="@color/lavender"
-            android:textSize="23sp" />
+            android:textSize="18sp" />
     </LinearLayout>
 
     <!-- FloatingActionMenu -->

@@ -78,9 +78,10 @@ public class TaskList extends Fragment {
                             String name = itemSnapshot2.child("name").getValue(String.class);
                             String time = itemSnapshot2.child("time").getValue(String.class);
                             String role = itemSnapshot2.child("role").getValue(String.class);
+                            String listObject = itemSnapshot2.child("object").getValue(String.class);
 
                             // Create a DataClass object
-                            DataClass dataClass = new DataClass(name, description, time, imageUrl,role, itemSnapshot.getKey().toString(), user);
+                            DataClass dataClass = new DataClass(name, description, time, imageUrl,role, itemSnapshot.getKey().toString(), user,listObject);
                             dataClass.setKey(itemSnapshot.getKey().toString()+"-"+itemSnapshot2.getKey().toString());
                             dataList.add(dataClass);
 
