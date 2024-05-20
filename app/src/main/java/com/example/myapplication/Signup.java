@@ -57,7 +57,7 @@ public class Signup extends AppCompatActivity {
         loginRedirectText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(Signup.this, MainActivity.class));
+                finish();
             }
         });
     }
@@ -90,8 +90,10 @@ public class Signup extends AppCompatActivity {
                 for (DataSnapshot organizationSnapshot : dataSnapshot.getChildren()) {
                     // Get the key (which is the organization ID)
                     String organizationId = organizationSnapshot.getKey();
-                    // Add the organization ID to your ArrayList
-                    dataList.add(organizationId);
+                    if(!organizationId.equals("building")) {
+                        // Add the organization ID to your ArrayList
+                        dataList.add(organizationId);
+                    }
                 }
 
                 // Create an ArrayAdapter and set it to the Spinner

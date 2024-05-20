@@ -2,7 +2,9 @@ package com.example.myapplication;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -19,6 +21,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -47,7 +50,7 @@ public class Home extends Fragment {
     private static final int REQUEST_IMAGE_GALLERY = 1;
     private static final int REQUEST_PERMISSION = 200;
     int selectedInt = 1500;
-    Spinner numberSpinner;
+    Spinner numberSpinner,objectSpinner;
     ImageView myimage;
     String name;
     ArrayAdapter<String> adapter;
@@ -55,9 +58,14 @@ public class Home extends Fragment {
     String imageUrl;
     String description;
     String formattedDateTime;
+    String role;
     User user;
     int flagImage;
-    @Override
+    ImageView selectOptionsButton;
+    TextView selectedOptionsTextView;
+    String[] listItems;
+    boolean[] checkedItems;
+    ArrayList<Integer> selectedItems = new ArrayList<>();
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -71,6 +79,7 @@ public class Home extends Fragment {
         {
             setTopMargin(view, 40);
         }
+        role = user.getLevel();
         name = user.getUserName();
         flagImage=0;
         FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -139,6 +148,61 @@ public class Home extends Fragment {
         Button uploadImage = dialog.findViewById(R.id.upLoadImage);
         myimage = dialog.findViewById(R.id.myImage);
         createSpinner(dialog,building);
+        selectOptionsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+                builder.setTitle("Select Options");
+                builder.setMultiChoiceItems(listItems, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                        if (isChecked) {
+                            if (!selectedItems.contains(which)) {
+                                selectedItems.add(which);
+                            }
+                        } else {
+                            selectedItems.remove(Integer.valueOf(which));
+                        }
+                    }
+                });
+
+                builder.setCancelable(false);
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        StringBuilder selectedOptions = new StringBuilder();
+                        for (int i = 0; i < selectedItems.size(); i++) {
+                            selectedOptions.append(listItems[selectedItems.get(i)]);
+                            if (i != selectedItems.size() - 1) {
+                                selectedOptions.append(", ");
+                            }
+                        }
+                        selectedOptionsTextView.setText("Selected Options: " + selectedOptions.toString());
+                    }
+                });
+
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                builder.setNeutralButton("Clear All", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        for (int i = 0; i < checkedItems.length; i++) {
+                            checkedItems[i] = false;
+                            selectedItems.clear();
+                            selectedOptionsTextView.setText("Selected Options: ");
+                        }
+                    }
+                });
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
         numberSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
@@ -161,7 +225,7 @@ public class Home extends Fragment {
         sumbit.setOnClickListener(view1 -> {
             description = descriptionEt.getText().toString();
             if (!description.isEmpty()) {
-                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("task").child(String.valueOf(selectedInt));
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("open-task").child(user.getOrg()).child(String.valueOf(selectedInt));
                 LocalDateTime now = LocalDateTime.now();
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy, HH:mm:ss");
                 formattedDateTime = now.format(formatter);
@@ -171,6 +235,8 @@ public class Home extends Fragment {
                 newTask.put("Description", description);
                 newTask.put("time", formattedDateTime);
                 newTask.put("name", name);
+                newTask.put("email", user.getEmail());
+                newTask.put("role", user.getLevel());
 
                 // Check if an image was selected
                 if (flagImage == 1) {
@@ -191,6 +257,7 @@ public class Home extends Fragment {
     }
     public void createSpinner(Dialog dialog, int building) {
         numberSpinner = dialog.findViewById(R.id.spinner_class);
+//        objectSpinner = dialog.findViewById(R.id.spinner_object);
 
         // Create a list of numbers from 0 to 16
         List<String> numbers = new ArrayList<>();
@@ -207,6 +274,10 @@ public class Home extends Fragment {
         // Apply the adapter to the spinner
         numberSpinner.setAdapter(adapter);
 
+        selectOptionsButton = dialog.findViewById(R.id.list_object);
+        selectedOptionsTextView = dialog.findViewById(R.id.selectedOptionsTextView);
+        listItems = getResources().getStringArray(R.array.options_array); // Define this array in res/values/strings.xml
+        checkedItems = new boolean[listItems.length];
     }
     private void uploadImageToFirebase(Uri imageUri, Map<String, Object> newTask, DatabaseReference databaseReference, Dialog dialog) {
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
@@ -295,7 +366,7 @@ public class Home extends Fragment {
     public void uploadData()
     {
 
-        DataClass dataClass = new DataClass(name,description,formattedDateTime,imageUrl,String.valueOf(selectedInt));
+        DataClass dataClass = new DataClass(name,description,formattedDateTime,imageUrl, role,String.valueOf(selectedInt),user);
     }
     private void setTopMargin(View view, int topMarginDp) {
         // Convert dp to pixels

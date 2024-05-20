@@ -39,19 +39,22 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
             Glide.with(context).load(dataList.get(position).getImageUrl()).into(holder.recImage);
         }
         holder.recTitle.setText(dataList.get(position).getNumClass());
-        holder.recDesc.setText(dataList.get(position).getDescription());
+        holder.recRole.setText(dataList.get(position).getRole());
         holder.recLang.setText(dataList.get(position).getTime());
         holder.recName.setText(dataList.get(position).getUserName());
         holder.recCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, DetailActivity.class);
-                intent.putExtra("Image", dataList.get(holder.getAdapterPosition()).getImageUrl());
-                intent.putExtra("Description", dataList.get(holder.getAdapterPosition()).getDescription());
-                intent.putExtra("Time", dataList.get(holder.getAdapterPosition()).getTime());
-                intent.putExtra("NumClass", dataList.get(holder.getAdapterPosition()).getNumClass());
-                intent.putExtra("Key",dataList.get(holder.getAdapterPosition()).getKey());
+                intent.putExtra("detail", dataList.get(holder.getAdapterPosition()));
                 context.startActivity(intent);
+
+//                intent.putExtra("Image", dataList.get(holder.getAdapterPosition()).getImageUrl());
+//                intent.putExtra("Description", dataList.get(holder.getAdapterPosition()).getDescription());
+//                intent.putExtra("Time", dataList.get(holder.getAdapterPosition()).getTime());
+//                intent.putExtra("NumClass", dataList.get(holder.getAdapterPosition()).getNumClass());
+//                intent.putExtra("Role", dataList.get(holder.getAdapterPosition()).getRole());
+//                intent.putExtra("Key",dataList.get(holder.getAdapterPosition()).getKey());
             }
         });
     }
@@ -65,13 +68,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
 class MyViewHolder extends RecyclerView.ViewHolder
 {
     ImageView recImage;
-    TextView recTitle, recDesc, recLang,recName;
+    TextView recTitle, recRole, recLang,recName;
     CardView recCard;
     public MyViewHolder(@NonNull View itemView) {
         super(itemView);
         recImage = itemView.findViewById(R.id.recImage);
         recCard = itemView.findViewById(R.id.recCard);
-        recDesc = itemView.findViewById(R.id.recDesc);
+        recRole = itemView.findViewById(R.id.recDesc);
         recLang = itemView.findViewById(R.id.recTime);
         recTitle = itemView.findViewById(R.id.recTitle);
         recName = itemView.findViewById(R.id.recPriority);

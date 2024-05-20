@@ -11,6 +11,13 @@
     <string name="didn_t_received_the_otp">Didn\'t received the OTP?</string>
     <string name="verify">Verify</string>
     <string name="_972">+972-</string>
+    <string-array name="options_array">
+        <item>מקרן</item>
+        <item>מחשב</item>
+        <item>וילון</item>
+        <item>חלון</item>
+        <item>לוח</item>
+    </string-array>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

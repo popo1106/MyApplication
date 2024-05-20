@@ -107,7 +107,9 @@ public class MainActivity extends AppCompatActivity {
                 orgList.clear(); // Clear the list before adding new data
                 for (DataSnapshot orgSnapshot : dataSnapshot.getChildren()) {
                     String orgName = orgSnapshot.getKey();
-                    orgList.add(orgName);
+                    if(!orgName.equals("building")) {
+                        orgList.add(orgName);
+                    }
                 }
                 orgAdapter.notifyDataSetChanged(); // Notify the adapter that data has changed
             }
@@ -159,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 } else {
-                    // If the username does not exist in the database
+                    // If the ID does not exist in the database
                     userId.setError("תעודת זהות לא נמצאה");
                 }
             }
@@ -173,48 +175,40 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void checkInWaitingList(final String Id, final String password) {
+    private void checkInWaitingList(final String Id, final String password, final OnCheckListener listener) {
         String role = spinner2.getSelectedItem().toString();
         String org = orgSpinner.getSelectedItem().toString();
-        // Query the Realtime Database to find the user with the provided username
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference().child("Waiting-list").child(org).child(role);
         usersRef.orderByChild("Id").equalTo(Id).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    // If the username exists, retrieve the email
                     for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
                         String email = userSnapshot.child("email").getValue(String.class);
-                        // Authenticate user with retrieved email and password
                         firebaseAuth.signInWithEmailAndPassword(email, password)
                                 .addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
                                     @Override
                                     public void onComplete(@NonNull Task<AuthResult> task) {
                                         if (task.isSuccessful()) {
-                                            // Sign in success
                                             Toast.makeText(MainActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
                                             startActivity(new Intent(MainActivity.this, WaitingScreen.class));
-                                            // Proceed to next activity or perform desired action
+                                            listener.onCheck(true);
                                         } else {
-                                            // Other authentication failures
-                                            //Toast.makeText(MainActivity.this, "pasword not found.", Toast.LENGTH_SHORT).show();
-                                            //UserPassword.setError("סיסמה לא נכונה");
-
+                                            UserPassword.setError("סיסמה לא נכונה");
+                                            listener.onCheck(true);
                                         }
                                     }
                                 });
-
                     }
                 } else {
-                    // If the username does not exist in the database
-                    //userId.setError("תעודת זהות לא נמצאה");
+                    listener.onCheck(false);
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Handle database error
                 Toast.makeText(MainActivity.this, "Database error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                listener.onCheck(false);
             }
         });
     }
@@ -235,6 +229,9 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(getApplicationContext(), SendOTPActivity.class));
     }
 
+    public interface OnCheckListener {
+        void onCheck(boolean success);
+    }
 
     public void loginUser(View view) {
         String id = userId.getText().toString().trim();
@@ -249,8 +246,14 @@ public class MainActivity extends AppCompatActivity {
             userId.setError("התעודת זהות לא יכולה להיות ריקה");
         }
         if(!(pass.isEmpty()||id.isEmpty())) {
-            checkInWaitingList(id, pass);
-            getEmailForUsername(id, pass);
+            checkInWaitingList(id, pass, new OnCheckListener() {
+                @Override
+                public void onCheck(boolean success) {
+                    if (!success) {
+                        getEmailForUsername(id, pass);
+                    }
+                }
+            });
         }
     }
 }

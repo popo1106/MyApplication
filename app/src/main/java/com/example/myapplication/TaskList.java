@@ -2,7 +2,6 @@ package com.example.myapplication;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,24 +49,18 @@ public class TaskList extends Fragment {
         AlertDialog dialog = builder.create();
         dialog.show();
         Bundle bundle = this.getArguments();
-        Log.e("lol1","ll");
         if(getArguments() != null) {
-            Log.e("lol2","ll");
             user = (User) getArguments().getSerializable("name");
-            Log.e("lol3","ll");
         }
-        Log.e("lol4","ll");
         if(user.getLevel().equals("מנהל-ת"))
         {
-            Log.e("lol5","ll");
             setTopMargin(view, 15);
         }
-        Log.e("lol16","ll");
         dataList = new ArrayList<>();
         adapter = new MyAdapter(requireContext(), dataList);
         recyclerView.setAdapter(adapter);
 
-        databaseReference = FirebaseDatabase.getInstance().getReference("task");
+        databaseReference = FirebaseDatabase.getInstance().getReference("open-task").child(user.getOrg());
         dialog.show();
         eventListener = databaseReference.addValueEventListener(new ValueEventListener() {
 
@@ -84,9 +77,10 @@ public class TaskList extends Fragment {
                             String imageUrl = itemSnapshot2.child("imageUrl").getValue(String.class);
                             String name = itemSnapshot2.child("name").getValue(String.class);
                             String time = itemSnapshot2.child("time").getValue(String.class);
+                            String role = itemSnapshot2.child("role").getValue(String.class);
 
                             // Create a DataClass object
-                            DataClass dataClass = new DataClass(name, description, time, imageUrl,itemSnapshot.getKey().toString());
+                            DataClass dataClass = new DataClass(name, description, time, imageUrl,role, itemSnapshot.getKey().toString(), user);
                             dataClass.setKey(itemSnapshot.getKey().toString()+"-"+itemSnapshot2.getKey().toString());
                             dataList.add(dataClass);
 

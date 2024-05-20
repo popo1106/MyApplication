@@ -15,6 +15,9 @@
         android:theme="@style/Theme.MyApplication"
         tools:targetApi="31">
         <activity
+            android:name=".tryA"
+            android:exported="false" />
+        <activity
             android:name=".listWaiting"
             android:exported="false" />
         <activity

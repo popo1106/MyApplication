@@ -1,6 +1,8 @@
 package com.example.myapplication;
 
-public class DataClass {
+import java.io.Serializable;
+
+public class DataClass implements Serializable {
 
     private String userName;
 
@@ -9,6 +11,8 @@ public class DataClass {
     private String imageUrl;
     private String NumClass;
     private String key;
+    private String Role;
+    private User currentUser;
 
     public String getKey() {
         return key;
@@ -18,12 +22,14 @@ public class DataClass {
         this.key = key;
     }
 
-    public DataClass(String userName, String description, String time, String imageUrl, String NumClass) {
+    public DataClass(String userName, String description, String time, String imageUrl,String Role, String NumClass,User currentUser) {
         this.userName = userName;
         this.Description = description;
         this.time = time;
         this.imageUrl = imageUrl;
         this.NumClass = NumClass;
+        this.Role = Role;
+        this.currentUser = currentUser;
     }
 
     public String getUserName() {
@@ -31,6 +37,12 @@ public class DataClass {
     }
     public String getNumClass() {
         return NumClass;
+    }
+    public String getRole() {
+        return Role;
+    }
+    public User getCurrentUser() {
+        return currentUser;
     }
 
 

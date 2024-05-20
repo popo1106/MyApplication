@@ -16,15 +16,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <LinearLayout
-            android:id="@+id/forImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            />
 
         <LinearLayout
-            android:layout_toEndOf="@id/forImage"
             android:id="@+id/first"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
