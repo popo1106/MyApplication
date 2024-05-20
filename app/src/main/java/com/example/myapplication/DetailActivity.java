@@ -52,7 +52,14 @@ public class DetailActivity extends AppCompatActivity {
             detailDesc.setText(detail.getDescription());
             detailTitle.setText("class: " +detail.getNumClass());
             detailLang.setText(detail.getTime());
-            listObject2Fix.setText();
+            if(detail.listObject()==null||detail.listObject().isEmpty())
+            {
+                listObject2Fix.setText("לא נבחרה אופציה");
+
+            }
+            else {
+                listObject2Fix.setText(detail.listObject());
+            }
             key = detail.getKey();
             Role = detail.getRole();
             currentUser = detail.getCurrentUser();

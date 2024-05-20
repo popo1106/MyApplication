@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,7 +66,7 @@ public class Home extends Fragment {
     TextView selectedOptionsTextView;
     String[] listItems;
     boolean[] checkedItems;
-    StringBuilder selectedOptions;
+    StringBuilder selectedOptions ;
     ArrayList<Integer> selectedItems = new ArrayList<>();
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -82,6 +83,7 @@ public class Home extends Fragment {
         }
         role = user.getLevel();
         name = user.getUserName();
+        selectedOptions = new StringBuilder();
         flagImage=0;
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
@@ -140,7 +142,6 @@ public class Home extends Fragment {
     }
 
     private void showAlertDialog(int building) {
-
         final Dialog dialog = new Dialog(requireContext());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(true);
@@ -156,7 +157,7 @@ public class Home extends Fragment {
                 builder.setTitle("Select Options");
                 builder.setMultiChoiceItems(listItems, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                    public void onClick(DialogInterface dialog2, int which, boolean isChecked) {
                         if (isChecked) {
                             if (!selectedItems.contains(which)) {
                                 selectedItems.add(which);
@@ -171,7 +172,6 @@ public class Home extends Fragment {
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        selectedOptions = new StringBuilder();
                         for (int i = 0; i < selectedItems.size(); i++) {
                             selectedOptions.append(listItems[selectedItems.get(i)]);
                             if (i != selectedItems.size() - 1) {
@@ -184,14 +184,14 @@ public class Home extends Fragment {
 
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void onClick(DialogInterface dialog3, int which) {
                         dialog.dismiss();
                     }
                 });
 
                 builder.setNeutralButton("Clear All", new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void onClick(DialogInterface dialog4, int which) {
                         for (int i = 0; i < checkedItems.length; i++) {
                             checkedItems[i] = false;
                             selectedItems.clear();
@@ -200,8 +200,8 @@ public class Home extends Fragment {
                     }
                 });
 
-                AlertDialog dialog = builder.create();
-                dialog.show();
+                AlertDialog dialog5 = builder.create();
+                dialog5.show();
             }
         });
         numberSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -222,7 +222,6 @@ public class Home extends Fragment {
             checkPermission();
         } );
         Button sumbit = dialog.findViewById(R.id.send);
-
         sumbit.setOnClickListener(view1 -> {
             description = descriptionEt.getText().toString();
             if (!description.isEmpty()) {
@@ -238,7 +237,15 @@ public class Home extends Fragment {
                 newTask.put("name", name);
                 newTask.put("email", user.getEmail());
                 newTask.put("role", user.getLevel());
-                newTask.put("object", selectedOptions.toString());
+                Log.e("lol7","k");
+                if(selectedOptions.toString()== null||selectedOptions.toString().isEmpty())
+                {
+                    newTask.put("object", "לא נבחרה אופציה");
+
+                }
+                else{
+                    newTask.put("object", selectedOptions.toString());
+                }
 
                 // Check if an image was selected
                 if (flagImage == 1) {
@@ -367,8 +374,17 @@ public class Home extends Fragment {
     }
     public void uploadData()
     {
-
+        Log.e("popo","lo");
+        Log.d("DataClass", "UserName: " + name);
+        Log.d("DataClass", "Description: " + description);
+        Log.d("DataClass", "Time: " + formattedDateTime);
+        Log.d("DataClass", "ImageUrl: " + imageUrl);
+        Log.d("DataClass", "Role: " + role);
+        Log.d("DataClass", "NumClass: " + selectedInt);
+        Log.d("DataClass", "User: " + user);
+        Log.d("DataClass", "ListObject: " + selectedOptions.toString());
         DataClass dataClass = new DataClass(name,description,formattedDateTime,imageUrl, role,String.valueOf(selectedInt),user,selectedOptions.toString());
+        Log.e("popo2","lo");
     }
     private void setTopMargin(View view, int topMarginDp) {
         // Convert dp to pixels
