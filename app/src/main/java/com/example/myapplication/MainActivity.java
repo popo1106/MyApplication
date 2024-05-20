@@ -7,6 +7,7 @@ import android.text.InputType;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -33,7 +34,6 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     Spinner spinner2,orgSpinner;
-    SharedPreferences sp;
     SharedPreferences.Editor editor;
     ToggleButton togglePassword;
     private FirebaseAuth firebaseAuth;
@@ -47,30 +47,54 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         FirebaseApp.initializeApp(this);
-        sp = getSharedPreferences("checkBox",MODE_PRIVATE);
-        String checkBox = sp.getString("remember","");
-        if(checkBox.equals("true")) {
+        initialization();
+        SharedPreferences preferences  = getSharedPreferences("checkbox",MODE_PRIVATE);
+        String checkbox = preferences.getString("remember","");
+        if(checkbox.equals("true"))
+        {
             Intent intent = new Intent(MainActivity.this, MainActivity2.class);
             startActivity(intent);
         }
-        initialization();
         signup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(MainActivity.this, Signup.class));
             }
         });
+        remember.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                SharedPreferences preferences = getSharedPreferences("checkbox", MODE_PRIVATE);
+                editor = preferences.edit();
+                if (isChecked) {
+                    editor.putString("remember", "true");
+                    editor.apply();
+                } else {
+                    editor.putString("remember", "false");
+                    editor.remove("userID");
+                    editor.apply();
+                }
+
+            }
+        });
+    }
+
+    private void saveUserPreferences(String userID) {
+        if (remember.isChecked()) {
+            editor.putString("userID",userID);
+            editor.apply();
+        }
     }
     private void initialization()
     {
         userId = findViewById(R.id.Id);
         signup = findViewById(R.id.signUpRedirectText);
         UserPassword = findViewById(R.id.passwordET);
-        remember = findViewById(R.id.remember);
         togglePassword = findViewById(R.id.togglePassword);
         togglePassword.setTextOff(null);
         togglePassword.setTextOn(null);
         firebaseAuth = FirebaseAuth.getInstance();
+        remember = findViewById(R.id.remember);
 
     }
     @Override
@@ -146,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
                                             User userD = new User(userSnapshot.child("name").getValue(String.class), email, userId.getText().toString().trim(), role, org);
                                             Intent intent = new Intent(MainActivity.this,MainActivity2.class);
                                             intent.putExtra("user", userD);
+                                            saveUserPreferences(userId.getText().toString().trim());
                                             startActivity(intent);
 
                                             // Proceed to next activity or perform desired action
@@ -255,4 +280,5 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
+
 }

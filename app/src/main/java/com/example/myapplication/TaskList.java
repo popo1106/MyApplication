@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -25,6 +26,8 @@ public class TaskList extends Fragment {
     RecyclerView recyclerView;
     MyAdapter adapter;
     User user;
+    TextView noTasksTextView;
+
     List<DataClass> dataList;
     DatabaseReference databaseReference;
     ValueEventListener eventListener;
@@ -41,6 +44,7 @@ public class TaskList extends Fragment {
         View view =  inflater.inflate(R.layout.fragment_task_list, container, false);
 
         recyclerView = view.findViewById(R.id.recyclerView);
+        noTasksTextView = view.findViewById(R.id.noTasksTextView); // Add this line
         GridLayoutManager gridLayoutManager = new GridLayoutManager(requireContext(), 1);
         recyclerView.setLayoutManager(gridLayoutManager);
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
@@ -91,6 +95,12 @@ public class TaskList extends Fragment {
                 }
                 adapter.notifyDataSetChanged();
                 dialog.dismiss();
+                // Check if dataList is empty and show/hide noTasksTextView
+                if (dataList.isEmpty()) {
+                    noTasksTextView.setVisibility(View.VISIBLE);
+                } else {
+                    noTasksTextView.setVisibility(View.GONE);
+                }
             }
 
             @Override

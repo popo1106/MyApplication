@@ -3,21 +3,27 @@ package com.example.myapplication;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 public class MainActivity2 extends AppCompatActivity {
     SharedPreferences.Editor editor;
     Profile profile = new Profile();
     TaskList TL = new TaskList();
     Home home = new Home();
-    SharedPreferences sp;
     BottomNavigationView BNV;
     User user;
     Toolbar toolbar;
@@ -31,6 +37,13 @@ public class MainActivity2 extends AppCompatActivity {
         setContentView(R.layout.activity_main2);
         if(getIntent().getExtras() != null) {
             user = (User) getIntent().getSerializableExtra("user");
+        }
+        else{
+            SharedPreferences preferences  = getSharedPreferences("checkbox",MODE_PRIVATE);
+            String userID = preferences.getString("userID","");
+            user = new User("", "", "", "", ""); // Initialize the User object
+            // Fetch and update user data
+            getUserById(userID);
         }
         toolbar = findViewById(R.id.toolbar);
 
@@ -96,15 +109,60 @@ public class MainActivity2 extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-    public void logout(View view) {
-        sp = getSharedPreferences("checkBox",MODE_PRIVATE);
-        sp = getSharedPreferences("checkBox",MODE_PRIVATE);
-        editor = sp.edit();
-        editor.putString("remember","false");
-        editor.apply();
-        Intent intent = new Intent(MainActivity2.this, MainActivity.class);
-        startActivity(intent);
-    }
 
+    private void getUserById(String idUser) {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("organization");
+
+        // Adding a listener to read the data at the specified path
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                boolean userFound = false;
+
+                // Iterate through organizations
+                for (DataSnapshot orgSnapshot : dataSnapshot.getChildren()) {
+                    // Iterate through levels within each organization
+                    for (DataSnapshot levelSnapshot : orgSnapshot.getChildren()) {
+                        // Iterate through user IDs within each level
+                        for (DataSnapshot userSnapshot : levelSnapshot.getChildren()) {
+                            String fetchedIdUser = userSnapshot.child("Id").getValue(String.class);
+                            if (fetchedIdUser != null && fetchedIdUser.equals(idUser)) {
+                                // Get user data
+                                user.setUserName(userSnapshot.child("name").getValue(String.class));
+                                user.setEmail(userSnapshot.child("email").getValue(String.class));
+                                String level = levelSnapshot.getKey();
+                                String org = orgSnapshot.getKey();
+
+                                // Update the User object
+                                user.setIdUser(idUser);
+                                user.setLevel(level);
+                                user.setOrg(org);
+
+                                userFound = true;
+                                break;
+                            }
+
+                        }
+                        if (userFound) break;
+                    }
+                    if (userFound) break;
+                }
+                if (userFound) {
+                    Log.d("MainActivity", "User: " + user.getUserName());
+                    Toast.makeText(MainActivity2.this, "User: " + user.getUserName(), Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.e("MainActivity", "User not found");
+                    Toast.makeText(MainActivity2.this, "User not found", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Handle possible errors
+                Log.e("MainActivity", "Error retrieving user", databaseError.toException());
+                Toast.makeText(MainActivity2.this, "Error retrieving user", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
 }

@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
-import android.content.Context;
+import static android.content.Context.MODE_PRIVATE;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -19,7 +20,6 @@ import com.google.firebase.database.FirebaseDatabase;
 public class Profile extends Fragment {
     BottomNavigationView BNV;
     SharedPreferences.Editor editor;
-    SharedPreferences sp;
     String name;
     User user;
     String password;
@@ -35,6 +35,10 @@ public class Profile extends Fragment {
         if(getArguments() != null) {
             user = (User) getArguments().getSerializable("name");
         }
+        else
+        {
+
+        }
         if(user.getLevel().equals("מנהל-ת"))
         {
             setTopMargin(view, 35);
@@ -43,12 +47,6 @@ public class Profile extends Fragment {
         userName =  view.findViewById(R.id.userName);
         email = view.findViewById(R.id.email);
         idUser = view.findViewById(R.id.idUser);
-//        if(name == null)
-//        {
-//            SharedPreferences sp = requireActivity().getSharedPreferences("checkBox", Context.MODE_PRIVATE);
-//            name = sp.getString("name","");
-//            password = sp.getString("password","");
-//        }
         userName.setText(name);
         email.setText(user.getEmail());
         idUser.setText(user.getIdUser());
@@ -65,13 +63,11 @@ public class Profile extends Fragment {
 
 
     private void logout() {
-        SharedPreferences sp = requireActivity().getSharedPreferences("checkBox", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sp.edit();
+        SharedPreferences preferences = requireActivity().getSharedPreferences("checkbox", MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
         editor.putString("remember", "false");
-        editor.putString("name", "false");
-        editor.putString("password", "false");
+        editor.remove("userID"); // remove another specific entry if needed
         editor.apply();
-
         Intent intent = new Intent(requireActivity(), MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Clears the back stack
         startActivity(intent);
