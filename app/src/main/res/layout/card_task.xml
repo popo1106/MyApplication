@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/recCard"
@@ -25,37 +25,38 @@
             android:layout_marginTop="10dp"
             android:scaleType="centerCrop"
             />
+
         <LinearLayout
-            android:layout_toEndOf="@id/recImage"
             android:id="@+id/first"
-            android:layout_width="wrap_content"
+            android:layout_width="106dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            >
-        <TextView
-            android:layout_width="120dp"
-            android:layout_height="30dp"
-            android:id="@+id/recTitle"
-            android:layout_gravity="left"
-            android:gravity="left"
-            android:text="class"
-            android:textColor="@color/lavender"
-            android:textSize="20sp"
-            android:layout_marginTop="20dp"
-            android:layout_marginStart="20dp"
-            />
-        <TextView
-            android:layout_width="120dp"
-            android:layout_height="30dp"
-            android:id="@+id/recDesc"
-            android:text="role"
-            android:textColor="@color/lavender"
-            android:textSize="14sp"
-            android:layout_gravity="left"
-            android:gravity="left"
-            android:layout_marginTop="14dp"
-            android:layout_marginStart="20dp"
-             />
+            android:layout_toEndOf="@id/recImage"
+
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/recTitle"
+                android:layout_width="120dp"
+                android:layout_height="30dp"
+                android:layout_gravity="left"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:gravity="left"
+                android:text="class"
+                android:textColor="@color/lavender"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/recDesc"
+                android:layout_width="120dp"
+                android:layout_height="30dp"
+                android:layout_gravity="left"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="14dp"
+                android:gravity="left"
+                android:text="role"
+                android:textColor="@color/lavender"
+                android:textSize="14sp" />
         </LinearLayout>
         <LinearLayout
             android:id="@+id/seconde"
@@ -63,7 +64,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginRight="20dp"
+            android:gravity="right"
+            android:layout_marginRight="10dp"
             >
         <TextView
             android:layout_width="120dp"
@@ -89,6 +91,20 @@
             android:textColor="@color/lavender"
             android:textSize="14sp"
             />
+        </LinearLayout>
+        <LinearLayout
+        android:id="@+id/third"
+        android:layout_toEndOf="@id/seconde"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+            <View
+                android:id="@+id/colorStripe"
+                android:layout_width="wrap_content"
+                android:layout_height="100dp"
+                android:layout_alignParentEnd="true"
+                android:background="@color/green" />
         </LinearLayout>
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

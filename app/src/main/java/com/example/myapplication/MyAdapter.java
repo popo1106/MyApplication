@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,19 +43,20 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
         holder.recRole.setText(dataList.get(position).getRole());
         holder.recLang.setText(dataList.get(position).getTime());
         holder.recName.setText(dataList.get(position).getUserName());
+        // Setting the color of the stripe based on urgency
+        if (dataList.get(position).getUrgency().equals("High")) {
+            holder.colorStripe.setBackgroundColor(context.getResources().getColor(R.color.red)); // Assuming high urgency should be red
+        } else if (dataList.get(position).getUrgency().equals("Medium")) {
+            holder.colorStripe.setBackgroundColor(Color.parseColor("#FFA500")); // Assuming medium urgency should be orange
+        } else if (dataList.get(position).getUrgency().equals("Low")) {
+            holder.colorStripe.setBackgroundColor(context.getResources().getColor(R.color.green)); // Assuming low urgency should be green
+        }
         holder.recCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, DetailActivity.class);
                 intent.putExtra("detail", dataList.get(holder.getAdapterPosition()));
                 context.startActivity(intent);
-
-//                intent.putExtra("Image", dataList.get(holder.getAdapterPosition()).getImageUrl());
-//                intent.putExtra("Description", dataList.get(holder.getAdapterPosition()).getDescription());
-//                intent.putExtra("Time", dataList.get(holder.getAdapterPosition()).getTime());
-//                intent.putExtra("NumClass", dataList.get(holder.getAdapterPosition()).getNumClass());
-//                intent.putExtra("Role", dataList.get(holder.getAdapterPosition()).getRole());
-//                intent.putExtra("Key",dataList.get(holder.getAdapterPosition()).getKey());
             }
         });
     }
@@ -69,6 +71,7 @@ class MyViewHolder extends RecyclerView.ViewHolder
 {
     ImageView recImage;
     TextView recTitle, recRole, recLang,recName;
+    View colorStripe;
     CardView recCard;
     public MyViewHolder(@NonNull View itemView) {
         super(itemView);
@@ -78,6 +81,7 @@ class MyViewHolder extends RecyclerView.ViewHolder
         recLang = itemView.findViewById(R.id.recTime);
         recTitle = itemView.findViewById(R.id.recTitle);
         recName = itemView.findViewById(R.id.recPriority);
+        colorStripe = itemView.findViewById(R.id.colorStripe);
     }
 
 
