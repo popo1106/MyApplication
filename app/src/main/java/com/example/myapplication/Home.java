@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -51,7 +52,7 @@ public class Home extends Fragment {
     private static final int REQUEST_IMAGE_GALLERY = 1;
     private static final int REQUEST_PERMISSION = 200;
     int selectedInt = 1500;
-    Spinner numberSpinner,objectSpinner;
+    Spinner numberSpinner,objectSpinner,urgencySpinner;
     ImageView myimage;
     String name;
     ArrayAdapter<String> adapter;
@@ -67,6 +68,8 @@ public class Home extends Fragment {
     String[] listItems;
     boolean[] checkedItems;
     StringBuilder selectedOptions ;
+    String urgencyLevel;
+
     ArrayList<Integer> selectedItems = new ArrayList<>();
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -150,6 +153,7 @@ public class Home extends Fragment {
         Button uploadImage = dialog.findViewById(R.id.upLoadImage);
         myimage = dialog.findViewById(R.id.myImage);
         createSpinner(dialog,building);
+        setupUrgencySpinner(dialog);
         selectOptionsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -225,7 +229,7 @@ public class Home extends Fragment {
         sumbit.setOnClickListener(view1 -> {
             description = descriptionEt.getText().toString();
             if (!description.isEmpty()) {
-                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("open-task").child(user.getOrg()).child(String.valueOf(selectedInt));
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("open-task").child(user.getOrg()).child(urgencySpinner.getSelectedItem().toString()).child(String.valueOf(selectedInt));
                 LocalDateTime now = LocalDateTime.now();
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy, HH:mm:ss");
                 formattedDateTime = now.format(formatter);
@@ -372,19 +376,64 @@ public class Home extends Fragment {
             }
         }
     }
+    private void setupUrgencySpinner(Dialog dialog) {
+        urgencySpinner = dialog.findViewById(R.id.spinner_urgency);
+
+        List<String> urgencyLevels = new ArrayList<>();
+        urgencyLevels.add("High");
+        urgencyLevels.add("Medium");
+        urgencyLevels.add("Low");
+
+        ArrayAdapter<String> urgencyAdapter = new ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_item, urgencyLevels) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View view = super.getView(position, convertView, parent);
+                setUrgencyTextColor(view, position);
+                return view;
+            }
+
+            @Override
+            public View getDropDownView(int position, View convertView, ViewGroup parent) {
+                View view = super.getDropDownView(position, convertView, parent);
+                setUrgencyTextColor(view, position);
+                return view;
+            }
+
+            private void setUrgencyTextColor(View view, int position) {
+                TextView textView = (TextView) view;
+                switch (position) {
+                    case 0:
+                        textView.setTextColor(Color.RED);
+                        break;
+                    case 1:
+                        textView.setTextColor(Color.parseColor("#FFA500")); // Orange color
+                        break;
+                    case 2:
+                        textView.setTextColor(Color.GREEN);
+                        break;
+                }
+            }
+        };
+
+        urgencyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        urgencySpinner.setAdapter(urgencyAdapter);
+
+        urgencySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                urgencyLevel = urgencyLevels.get(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                urgencyLevel = "Low"; // Default to low urgency if nothing is selected
+            }
+        });
+    }
     public void uploadData()
     {
-        Log.e("popo","lo");
-        Log.d("DataClass", "UserName: " + name);
-        Log.d("DataClass", "Description: " + description);
-        Log.d("DataClass", "Time: " + formattedDateTime);
-        Log.d("DataClass", "ImageUrl: " + imageUrl);
-        Log.d("DataClass", "Role: " + role);
-        Log.d("DataClass", "NumClass: " + selectedInt);
-        Log.d("DataClass", "User: " + user);
-        Log.d("DataClass", "ListObject: " + selectedOptions.toString());
-        DataClass dataClass = new DataClass(name,description,formattedDateTime,imageUrl, role,String.valueOf(selectedInt),user,selectedOptions.toString());
-        Log.e("popo2","lo");
+        DataClass dataClass = new DataClass(name,description,formattedDateTime,imageUrl, role,String.valueOf(selectedInt),user,selectedOptions.toString(),urgencySpinner.getSelectedItem().toString());
+
     }
     private void setTopMargin(View view, int topMarginDp) {
         // Convert dp to pixels

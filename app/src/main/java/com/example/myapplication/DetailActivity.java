@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -91,11 +92,12 @@ public class DetailActivity extends AppCompatActivity {
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.e("DeleteAction", "Urgency: " + detail.getUrgency());
                 String[] parts = key.split("-");
                 String NumClass = parts[0];
                 String id = parts[1];
-
-                DatabaseReference openTaskRef = FirebaseDatabase.getInstance().getReference("open-task").child(currentUser.getOrg()).child(NumClass).child(id);
+                Log.e("DeleteAction", "Urgency: " + detail.getUrgency());
+                DatabaseReference openTaskRef = FirebaseDatabase.getInstance().getReference("open-task").child(currentUser.getOrg()).child(detail.getUrgency()).child(NumClass).child(id);
                 DatabaseReference closeTaskRef = FirebaseDatabase.getInstance().getReference("close-task").child(currentUser.getOrg()).child(NumClass);
 
                 openTaskRef.addListenerForSingleValueEvent(new ValueEventListener() {

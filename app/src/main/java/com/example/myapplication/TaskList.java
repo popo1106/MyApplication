@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,25 +72,28 @@ public class TaskList extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 dataList.clear();
-                for (DataSnapshot itemSnapshot : snapshot.getChildren()) {
-                    for (DataSnapshot itemSnapshot2 : itemSnapshot.getChildren()) {
-                        if (itemSnapshot2.getValue() != null) {
-                            // Accessing the second element of the array
+                for (DataSnapshot itemSnapshot3 : snapshot.getChildren()) {
+                    for (DataSnapshot itemSnapshot : itemSnapshot3.getChildren()) {
+                        for (DataSnapshot itemSnapshot2 : itemSnapshot.getChildren()) {
+                            if (itemSnapshot2.getValue() != null) {
+                                // Accessing the second element of the array
 
-                            // Extracting values
-                            String description = itemSnapshot2.child("Description").getValue(String.class);
-                            String imageUrl = itemSnapshot2.child("imageUrl").getValue(String.class);
-                            String name = itemSnapshot2.child("name").getValue(String.class);
-                            String time = itemSnapshot2.child("time").getValue(String.class);
-                            String role = itemSnapshot2.child("role").getValue(String.class);
-                            String listObject = itemSnapshot2.child("object").getValue(String.class);
+                                // Extracting values
+                                String description = itemSnapshot2.child("Description").getValue(String.class);
+                                String imageUrl = itemSnapshot2.child("imageUrl").getValue(String.class);
+                                String name = itemSnapshot2.child("name").getValue(String.class);
+                                String time = itemSnapshot2.child("time").getValue(String.class);
+                                String role = itemSnapshot2.child("role").getValue(String.class);
+                                String listObject = itemSnapshot2.child("object").getValue(String.class);
 
-                            // Create a DataClass object
-                            DataClass dataClass = new DataClass(name, description, time, imageUrl,role, itemSnapshot.getKey().toString(), user,listObject);
-                            dataClass.setKey(itemSnapshot.getKey().toString()+"-"+itemSnapshot2.getKey().toString());
-                            dataList.add(dataClass);
+                                // Create a DataClass object
+                                Log.e("lol3",itemSnapshot3.getKey().toString());
+                                DataClass dataClass = new DataClass(name, description, time, imageUrl, role, itemSnapshot.getKey().toString(), user, listObject,itemSnapshot3.getKey().toString());
+                                dataClass.setKey(itemSnapshot.getKey().toString() + "-" + itemSnapshot2.getKey().toString());
+                                dataList.add(dataClass);
 
-                            // Now, you can use the dataClass object as needed
+                                // Now, you can use the dataClass object as needed
+                            }
                         }
                     }
                 }

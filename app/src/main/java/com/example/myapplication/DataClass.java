@@ -14,6 +14,7 @@ public class DataClass implements Serializable {
     private String Role;
     private User currentUser;
     private String listObject;
+    private String Urgency;
 
 
     public String getKey() {
@@ -24,7 +25,7 @@ public class DataClass implements Serializable {
         this.key = key;
     }
 
-    public DataClass(String userName, String description, String time, String imageUrl,String Role, String NumClass,User currentUser,String listObject) {
+    public DataClass(String userName, String description, String time, String imageUrl,String Role, String NumClass,User currentUser,String listObject, String Urgency) {
         this.userName = userName;
         this.Description = description;
         this.time = time;
@@ -33,10 +34,14 @@ public class DataClass implements Serializable {
         this.Role = Role;
         this.currentUser = currentUser;
         this.listObject = listObject;
+        this.Urgency = Urgency;
     }
 
     public String getUserName() {
         return userName;
+    }
+    public String getUrgency() {
+        return Urgency;
     }
     public String listObject() {
         return listObject;
