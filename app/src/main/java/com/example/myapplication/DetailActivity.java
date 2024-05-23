@@ -113,6 +113,8 @@ public class DetailActivity extends AppCompatActivity {
                             closeTaskData.put("who close", currentUser.getUserName());
                             closeTaskData.put("when close", getCurrentDateTime());
                             closeTaskData.put("when open", taskData.get("time"));
+                            closeTaskData.put("who open", taskData.get("name"));
+                            closeTaskData.put("who open(email)", taskData.get("email"));
 
                             // Retrieve the last task number
                             closeTaskRef.orderByKey().limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {

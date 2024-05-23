@@ -34,7 +34,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull MyViewHolder holder,int position) {
         if(!dataList.get(position).getImageUrl().equals("dont use image"))
         {
             Glide.with(context).load(dataList.get(position).getImageUrl()).into(holder.recImage);
@@ -51,12 +51,25 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
         } else if (dataList.get(position).getUrgency().equals("Low")) {
             holder.colorStripe.setBackgroundColor(context.getResources().getColor(R.color.green)); // Assuming low urgency should be green
         }
+        else
+        {
+            holder.colorStripe.setBackgroundColor(Color.parseColor("#FFFFFF"));
+        }
         holder.recCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(context, DetailActivity.class);
-                intent.putExtra("detail", dataList.get(holder.getAdapterPosition()));
-                context.startActivity(intent);
+                if(dataList.get(position).getUrgency().equals("no"))
+                {
+                    Intent intent = new Intent(context, detailOnCloseTask.class);
+//                    intent.putExtra("detail", dataList.get(holder.getAdapterPosition()));
+                    context.startActivity(intent);
+                }
+                else
+                {
+                    Intent intent = new Intent(context, DetailActivity.class);
+                    intent.putExtra("detail", dataList.get(holder.getAdapterPosition()));
+                    context.startActivity(intent);
+                }
             }
         });
     }

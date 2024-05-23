@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Filter by Status" />
+
+    <CheckBox
+        android:id="@+id/checkOpen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Open Tasks" />
+    <CheckBox
+        android:id="@+id/checkClosed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Closed Tasks" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Filter by Urgency" />
+
+    <CheckBox
+        android:id="@+id/checkHigh"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="High" />
+    <CheckBox
+        android:id="@+id/checkMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Medium" />
+    <CheckBox
+        android:id="@+id/checkLow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Low" />
+
+</LinearLayout>
