@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -28,6 +29,7 @@ public class MainActivity2 extends AppCompatActivity {
     User user;
     Toolbar toolbar;
 
+    AlertDialog loadingDialog;
 
     String name;
     String password;
@@ -43,6 +45,10 @@ public class MainActivity2 extends AppCompatActivity {
             String userID = preferences.getString("userID","");
             user = new User("", "", "", "", ""); // Initialize the User object
             // Fetch and update user data
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setView(R.layout.progress_layout);
+            builder.setCancelable(false);
+            loadingDialog = builder.create();
             getUserById(userID);
         }
         toolbar = findViewById(R.id.toolbar);
@@ -111,6 +117,8 @@ public class MainActivity2 extends AppCompatActivity {
     }
 
     private void getUserById(String idUser) {
+        loadingDialog.show();
+
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("organization");
 
         // Adding a listener to read the data at the specified path
@@ -154,6 +162,7 @@ public class MainActivity2 extends AppCompatActivity {
                     Log.e("MainActivity", "User not found");
                     Toast.makeText(MainActivity2.this, "User not found", Toast.LENGTH_SHORT).show();
                 }
+                loadingDialog.dismiss();
             }
 
             @Override
@@ -161,6 +170,7 @@ public class MainActivity2 extends AppCompatActivity {
                 // Handle possible errors
                 Log.e("MainActivity", "Error retrieving user", databaseError.toException());
                 Toast.makeText(MainActivity2.this, "Error retrieving user", Toast.LENGTH_SHORT).show();
+                loadingDialog.dismiss();
             }
         });
     }

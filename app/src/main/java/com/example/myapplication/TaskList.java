@@ -182,11 +182,33 @@ public class TaskList extends Fragment {
 
                         // Example logic: Displaying selected filters as a toast
                         StringBuilder filters = new StringBuilder("Selected filters:\n");
-                        if (isOpenChecked) showOpenTask(dialog);
+                        if (isOpenChecked) {
+                            if(!(isHighChecked||isLowChecked||isMediumChecked)) {
+                                showOpenTask(dialog);
+                            }
+                        }
                         if (isClosedChecked) showCloseTask(dialog,isOpenChecked) ;
-                        if (isHighChecked) filters.append("High\n");
-                        if (isMediumChecked) filters.append("Medium\n");
-                        if (isLowChecked) filters.append("Low\n");
+                        if (isHighChecked) {
+                            dataList.clear();
+                            showUrgency(dialog, "High");
+                        }
+                        if (isMediumChecked)
+                        {
+                            if(!isHighChecked)
+                            {
+                                dataList.clear();
+                            }
+                            showUrgency(dialog, "Medium");
+                        }
+                        if (isLowChecked)
+                        {
+                            if(!isHighChecked && !isMediumChecked)
+                            {
+                                dataList.clear();
+                            }
+                            showUrgency(dialog, "Low");
+                        }
+
 
                         Toast.makeText(requireContext(), filters.toString(), Toast.LENGTH_LONG).show();
                     })
@@ -317,6 +339,7 @@ public class TaskList extends Fragment {
                 dialog.dismiss();
                 // Check if dataList is empty and show/hide noTasksTextView
                 if (dataList.isEmpty()) {
+                    noTasksTextView.setText("There are no closed tasks");
                     noTasksTextView.setVisibility(View.VISIBLE);
                 } else {
                     noTasksTextView.setVisibility(View.GONE);
@@ -330,4 +353,60 @@ public class TaskList extends Fragment {
         });
     }
 
+    private void showUrgency(Dialog dialog, String urgency)
+    {
+
+        adapter = new MyAdapter(requireContext(), dataList);
+        recyclerView.setAdapter(adapter);
+
+        DatabaseReference urgencyTaskRef = FirebaseDatabase.getInstance().getReference("open-task").child(user.getOrg()).child(urgency);
+        // Add a ValueEventListener to retrieve the data
+        dialog.show();
+        urgencyTaskRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // Iterate through the dataSnapshot to access each task
+                for (DataSnapshot buildingSnapshot : dataSnapshot.getChildren()) {
+                    // Iterate through each task under the "High" category
+                    for (DataSnapshot taskSnapshot : buildingSnapshot.getChildren()) {
+                        // Access the task details
+                        if (taskSnapshot.getValue() != null) {
+                            // Accessing the second element of the array
+
+                            // Extracting values
+                            String description = taskSnapshot.child("Description").getValue(String.class);
+                            String imageUrl = taskSnapshot.child("imageUrl").getValue(String.class);
+                            String name = taskSnapshot.child("name").getValue(String.class);
+                            String time = taskSnapshot.child("time").getValue(String.class);
+                            String role = taskSnapshot.child("role").getValue(String.class);
+                            String listObject = taskSnapshot.child("object").getValue(String.class);
+
+                            // Create a DataClass object
+                            DataClass dataClass = new DataClass(name, description, time, imageUrl, role, buildingSnapshot.getKey().toString(), user, listObject,urgency);
+                            dataClass.setKey(buildingSnapshot.getKey().toString() + "-" + taskSnapshot.getKey().toString());
+                            dataList.add(dataClass);
+
+                            // Now, you can use the dataClass object as needed
+                        }
+                    }
+                }
+                adapter.notifyDataSetChanged();
+                dialog.dismiss();
+                // Check if dataList is empty and show/hide noTasksTextView
+                if (dataList.isEmpty()) {
+                    noTasksTextView.setText("There are no open urgent tasks of the type:"+urgency);
+                    noTasksTextView.setVisibility(View.VISIBLE);
+                } else {
+                    noTasksTextView.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle errors
+                dialog.dismiss();
+            }
+        });
+
+    }
 }
