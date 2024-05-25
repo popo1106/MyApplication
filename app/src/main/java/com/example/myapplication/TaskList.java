@@ -67,56 +67,8 @@ public class TaskList extends Fragment {
             setTopMargin(view, 15);
         }
         dataList = new ArrayList<>();
-        adapter = new MyAdapter(requireContext(), dataList);
-        recyclerView.setAdapter(adapter);
-
-        databaseReference = FirebaseDatabase.getInstance().getReference("open-task").child(user.getOrg());
-        dialog.show();
-        eventListener = databaseReference.addValueEventListener(new ValueEventListener() {
-
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                dataList.clear();
-                for (DataSnapshot itemSnapshot3 : snapshot.getChildren()) {
-                    for (DataSnapshot itemSnapshot : itemSnapshot3.getChildren()) {
-                        for (DataSnapshot itemSnapshot2 : itemSnapshot.getChildren()) {
-                            if (itemSnapshot2.getValue() != null) {
-                                // Accessing the second element of the array
-
-                                // Extracting values
-                                String description = itemSnapshot2.child("Description").getValue(String.class);
-                                String imageUrl = itemSnapshot2.child("imageUrl").getValue(String.class);
-                                String name = itemSnapshot2.child("name").getValue(String.class);
-                                String time = itemSnapshot2.child("time").getValue(String.class);
-                                String role = itemSnapshot2.child("role").getValue(String.class);
-                                String listObject = itemSnapshot2.child("object").getValue(String.class);
-
-                                // Create a DataClass object
-                                Log.e("lol3",itemSnapshot3.getKey().toString());
-                                DataClass dataClass = new DataClass(name, description, time, imageUrl, role, itemSnapshot.getKey().toString(), user, listObject,itemSnapshot3.getKey().toString());
-                                dataClass.setKey(itemSnapshot.getKey().toString() + "-" + itemSnapshot2.getKey().toString());
-                                dataList.add(dataClass);
-
-                                // Now, you can use the dataClass object as needed
-                            }
-                        }
-                    }
-                }
-                adapter.notifyDataSetChanged();
-                dialog.dismiss();
-                // Check if dataList is empty and show/hide noTasksTextView
-                if (dataList.isEmpty()) {
-                    noTasksTextView.setVisibility(View.VISIBLE);
-                } else {
-                    noTasksTextView.setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                dialog.dismiss();
-            }
-        });
+        showOpenTask(dialog,true);
+        showCloseTask(dialog,true,true);
         Button btnApplyFilter = view.findViewById(R.id.btnFilter);
 
         btnApplyFilter.setOnClickListener(v -> {
@@ -129,6 +81,7 @@ public class TaskList extends Fragment {
             CheckBox checkHigh = dialogView.findViewById(R.id.checkHigh);
             CheckBox checkMedium = dialogView.findViewById(R.id.checkMedium);
             CheckBox checkLow = dialogView.findViewById(R.id.checkLow);
+            CheckBox checkMe = dialogView.findViewById(R.id.checkOnlyUser);
 
             // Add listeners to manage checkbox states
             CompoundButton.OnCheckedChangeListener closedTaskListener = new CompoundButton.OnCheckedChangeListener() {
@@ -175,6 +128,7 @@ public class TaskList extends Fragment {
                     .setPositiveButton("Apply", (dialogInterface, i) -> {
                         // Handle filter application logic here
                         boolean isOpenChecked = checkOpen.isChecked();
+                        boolean isMeChecked = checkMe.isChecked();
                         boolean isClosedChecked = checkClosed.isChecked();
                         boolean isHighChecked = checkHigh.isChecked();
                         boolean isMediumChecked = checkMedium.isChecked();
@@ -182,15 +136,27 @@ public class TaskList extends Fragment {
 
                         // Example logic: Displaying selected filters as a toast
                         StringBuilder filters = new StringBuilder("Selected filters:\n");
-                        if (isOpenChecked) {
-                            if(!(isHighChecked||isLowChecked||isMediumChecked)) {
-                                showOpenTask(dialog);
+                        if(isMeChecked)
+                        {
+                            if(!isOpenChecked && !isClosedChecked )
+                            {
+                                showOpenTask(dialog,isMeChecked);
+                                showCloseTask(dialog,true,isMeChecked);
                             }
                         }
-                        if (isClosedChecked) showCloseTask(dialog,isOpenChecked) ;
+                        if (isOpenChecked) {
+                            if(!(isHighChecked||isLowChecked||isMediumChecked)) {
+                                showOpenTask(dialog,isMeChecked);
+
+                            }
+                        }
+                        if (isClosedChecked)
+                        {
+                            showCloseTask(dialog,isOpenChecked,isMeChecked);
+                        }
                         if (isHighChecked) {
                             dataList.clear();
-                            showUrgency(dialog, "High");
+                            showUrgency(dialog, "High",isMeChecked);
                         }
                         if (isMediumChecked)
                         {
@@ -198,7 +164,7 @@ public class TaskList extends Fragment {
                             {
                                 dataList.clear();
                             }
-                            showUrgency(dialog, "Medium");
+                            showUrgency(dialog, "Medium",isMeChecked);
                         }
                         if (isLowChecked)
                         {
@@ -206,7 +172,7 @@ public class TaskList extends Fragment {
                             {
                                 dataList.clear();
                             }
-                            showUrgency(dialog, "Low");
+                            showUrgency(dialog, "Low",isMeChecked);
                         }
 
 
@@ -241,7 +207,7 @@ public class TaskList extends Fragment {
         return Math.round(dp * density);
     }
 
-    private void showOpenTask(Dialog dialog)
+    private void showOpenTask(Dialog dialog, boolean me)
     {
         adapter = new MyAdapter(requireContext(), dataList);
         recyclerView.setAdapter(adapter);
@@ -256,9 +222,9 @@ public class TaskList extends Fragment {
                 for (DataSnapshot itemSnapshot3 : snapshot.getChildren()) {
                     for (DataSnapshot itemSnapshot : itemSnapshot3.getChildren()) {
                         for (DataSnapshot itemSnapshot2 : itemSnapshot.getChildren()) {
-                            if (itemSnapshot2.getValue() != null) {
+                            if (itemSnapshot2.getValue() != null &&me &&user.getEmail().equals(itemSnapshot2.child("email").getValue(String.class))) {
                                 // Accessing the second element of the array
-
+                                Log.e("hello9","no");
                                 // Extracting values
                                 String description = itemSnapshot2.child("Description").getValue(String.class);
                                 String imageUrl = itemSnapshot2.child("imageUrl").getValue(String.class);
@@ -268,12 +234,25 @@ public class TaskList extends Fragment {
                                 String listObject = itemSnapshot2.child("object").getValue(String.class);
 
                                 // Create a DataClass object
-                                Log.e("lol3",itemSnapshot3.getKey().toString());
-                                DataClass dataClass = new DataClass(name, description, time, imageUrl, role, itemSnapshot.getKey().toString(), user, listObject,itemSnapshot3.getKey().toString());
+                                Log.e("lol3", itemSnapshot3.getKey().toString());
+                                DataClass dataClass = new DataClass(name, description, time, imageUrl, role, itemSnapshot.getKey().toString(), user, listObject, itemSnapshot3.getKey().toString());
                                 dataClass.setKey(itemSnapshot.getKey().toString() + "-" + itemSnapshot2.getKey().toString());
                                 dataList.add(dataClass);
-
                                 // Now, you can use the dataClass object as needed
+                            }
+                            else if(itemSnapshot2.getValue() != null &&!me){
+                                String description = itemSnapshot2.child("Description").getValue(String.class);
+                                String imageUrl = itemSnapshot2.child("imageUrl").getValue(String.class);
+                                String name = itemSnapshot2.child("name").getValue(String.class);
+                                String time = itemSnapshot2.child("time").getValue(String.class);
+                                String role = itemSnapshot2.child("role").getValue(String.class);
+                                String listObject = itemSnapshot2.child("object").getValue(String.class);
+
+                                // Create a DataClass object
+                                Log.e("lol3", itemSnapshot3.getKey().toString());
+                                DataClass dataClass = new DataClass(name, description, time, imageUrl, role, itemSnapshot.getKey().toString(), user, listObject, itemSnapshot3.getKey().toString());
+                                dataClass.setKey(itemSnapshot.getKey().toString() + "-" + itemSnapshot2.getKey().toString());
+                                dataList.add(dataClass);
                             }
                         }
                     }
@@ -295,7 +274,7 @@ public class TaskList extends Fragment {
         });
     }
 
-    private void showCloseTask(Dialog dialog, boolean open)
+    private void showCloseTask(Dialog dialog, boolean open, boolean me)
     {
         if(!open)
         {
@@ -319,20 +298,38 @@ public class TaskList extends Fragment {
                     String buildingName = buildingSnapshot.getKey();
                     Log.e("Building Name", buildingName); // Log for debugging
                     for (DataSnapshot taskSnapshot : buildingSnapshot.getChildren()) {
-                        String taskId = taskSnapshot.getKey();
-                        Log.e("Task ID", taskId); // Log for debugging
-                        String description = taskSnapshot.child("Description").getValue(String.class);
-                        String object = taskSnapshot.child("object").getValue(String.class);
-                        String whenClose = taskSnapshot.child("when close").getValue(String.class);
-                        String whenOpen = taskSnapshot.child("when open").getValue(String.class);
-                        String whoClose = taskSnapshot.child("who close").getValue(String.class);
-                        String whoOpen = taskSnapshot.child("who open").getValue(String.class);
-                        String whoOpenEmail = taskSnapshot.child("who open(email)").getValue(String.class);
+                        if(me &&user.getEmail().equals(taskSnapshot.child("who open(email)").getValue(String.class))) {
+                            String taskId = taskSnapshot.getKey();
+                            Log.e("Task ID", taskId); // Log for debugging
+                            String description = taskSnapshot.child("Description").getValue(String.class);
+                            String object = taskSnapshot.child("object").getValue(String.class);
+                            String whenClose = taskSnapshot.child("when close").getValue(String.class);
+                            String whenOpen = taskSnapshot.child("when open").getValue(String.class);
+                            String whoClose = taskSnapshot.child("who close").getValue(String.class);
+                            String whoOpen = taskSnapshot.child("who open").getValue(String.class);
+                            String whoOpenEmail = taskSnapshot.child("who open(email)").getValue(String.class);
 
-                        DataClass dataClass = new DataClass(whoClose, description, whenClose, "dont use image", "נסגר", buildingSnapshot.getKey().toString(), user, object,"no");
-                        Log.e("description",description);
-                        dataClass.setKey(buildingSnapshot.getKey().toString() + "-" + taskSnapshot.getKey().toString());
-                        dataList.add(dataClass);
+                            DataClass dataClass = new DataClass(whoClose, description, whenClose, "dont use image", "נסגר", buildingSnapshot.getKey().toString(), user, object, "no");
+                            Log.e("description", description);
+                            dataClass.setKey(buildingSnapshot.getKey().toString() + "-" + taskSnapshot.getKey().toString());
+                            dataList.add(dataClass);
+                        }
+                        else if(taskSnapshot.getValue() != null &&!me){
+                            String taskId = taskSnapshot.getKey();
+                            Log.e("Task ID", taskId); // Log for debugging
+                            String description = taskSnapshot.child("Description").getValue(String.class);
+                            String object = taskSnapshot.child("object").getValue(String.class);
+                            String whenClose = taskSnapshot.child("when close").getValue(String.class);
+                            String whenOpen = taskSnapshot.child("when open").getValue(String.class);
+                            String whoClose = taskSnapshot.child("who close").getValue(String.class);
+                            String whoOpen = taskSnapshot.child("who open").getValue(String.class);
+                            String whoOpenEmail = taskSnapshot.child("who open(email)").getValue(String.class);
+
+                            DataClass dataClass = new DataClass(whoClose, description, whenClose, "dont use image", "נסגר", buildingSnapshot.getKey().toString(), user, object, "no");
+                            Log.e("description", description);
+                            dataClass.setKey(buildingSnapshot.getKey().toString() + "-" + taskSnapshot.getKey().toString());
+                            dataList.add(dataClass);
+                        }
                     }
                 }
                 adapter.notifyDataSetChanged();
@@ -353,7 +350,7 @@ public class TaskList extends Fragment {
         });
     }
 
-    private void showUrgency(Dialog dialog, String urgency)
+    private void showUrgency(Dialog dialog, String urgency, boolean me)
     {
 
         adapter = new MyAdapter(requireContext(), dataList);
@@ -370,7 +367,7 @@ public class TaskList extends Fragment {
                     // Iterate through each task under the "High" category
                     for (DataSnapshot taskSnapshot : buildingSnapshot.getChildren()) {
                         // Access the task details
-                        if (taskSnapshot.getValue() != null) {
+                        if (taskSnapshot.getValue() != null&& me &&user.getEmail().equals(taskSnapshot.child("email").getValue(String.class))) {
                             // Accessing the second element of the array
 
                             // Extracting values
@@ -387,6 +384,20 @@ public class TaskList extends Fragment {
                             dataList.add(dataClass);
 
                             // Now, you can use the dataClass object as needed
+                        }
+                        else if(taskSnapshot.getValue() != null&&!me)
+                        {
+                            String description = taskSnapshot.child("Description").getValue(String.class);
+                            String imageUrl = taskSnapshot.child("imageUrl").getValue(String.class);
+                            String name = taskSnapshot.child("name").getValue(String.class);
+                            String time = taskSnapshot.child("time").getValue(String.class);
+                            String role = taskSnapshot.child("role").getValue(String.class);
+                            String listObject = taskSnapshot.child("object").getValue(String.class);
+
+                            // Create a DataClass object
+                            DataClass dataClass = new DataClass(name, description, time, imageUrl, role, buildingSnapshot.getKey().toString(), user, listObject,urgency);
+                            dataClass.setKey(buildingSnapshot.getKey().toString() + "-" + taskSnapshot.getKey().toString());
+                            dataList.add(dataClass);
                         }
                     }
                 }

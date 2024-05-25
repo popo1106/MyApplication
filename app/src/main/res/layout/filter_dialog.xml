@@ -41,5 +41,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Low" />
+    <CheckBox
+        android:id="@+id/checkOnlyUser"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Only tasks I uploaded" />
 
 </LinearLayout>
