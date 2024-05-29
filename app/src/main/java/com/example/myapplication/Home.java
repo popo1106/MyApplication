@@ -36,14 +36,11 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -59,6 +56,8 @@ import java.util.Map;
 public class Home extends Fragment {
     private FrameLayout frameLayout;
     User user;
+    private Bitmap cachedBackgroundBitmap;
+
     Spinner numberSpinner,urgencySpinner;
     private static final int REQUEST_IMAGE_GALLERY = 1;
     private static final int REQUEST_PERMISSION = 200;
@@ -81,69 +80,49 @@ public class Home extends Fragment {
 
         frameLayout = view.findViewById(R.id.frameLayout);
         Bundle bundle = this.getArguments();
-        if(getArguments() != null) {
+        if (getArguments() != null) {
             user = (User) getArguments().getSerializable("name");
-
         }
-        if(user.getLevel().equals("מנהל-ת"))
-        {
+
+        if (user != null && user.getLevel().equals("מנהל-ת")) {
             setTopMargin(view, 40);
         }
-        flagImage=0;
+
+        flagImage = 0;
         selectedOptions = new StringBuilder();
-        if (frameLayout != null) {
-            FirebaseStorage storage = FirebaseStorage.getInstance();
-            StorageReference storageRef = storage.getReference().child("images/640037/school.png");
-            try {
-                File localFile = File.createTempFile("school", "png");
 
-                storageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                        Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
-                        frameLayout.setBackground(new BitmapDrawable(getResources(), bitmap));
-
-                        frameLayout.setOnTouchListener(new View.OnTouchListener() {
-                            @Override
-                            public boolean onTouch(View v, MotionEvent event) {
-                                int action = event.getAction();
-                                if (action == MotionEvent.ACTION_DOWN) {
-                                    float touchX = event.getX();
-                                    float touchY = event.getY();
-
-                                    // Get the width and height of the screen
-                                    DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-                                    int screenWidth = displayMetrics.widthPixels;
-                                    int screenHeight = displayMetrics.heightPixels;
-
-                                    // Calculate scaling factors
-                                    float scaleX = (float) screenWidth / 568; // assuming your original width is 568px
-                                    float scaleY = (float) screenHeight / 694; // assuming your original height is 694px
-
-                                    // Scale the touch coordinates
-                                    float scaledX = touchX / scaleX;
-                                    float scaledY = touchY / scaleY;
-
-                                    Log.d("TouchTest", "Scaled Touch coordinates: X = " + scaledX + ", Y = " + scaledY);
-                                    getBuildingData(scaledX,scaledY);
-                                }
-                                return false;
-                            }
-                        });
-
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        Toast.makeText(requireContext(), "Failed to download image", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        // Load background image if not cached
+        if (cachedBackgroundBitmap == null) {
+            loadBackgroundImageFromFirebase();
         } else {
-            Toast.makeText(requireContext(), "FrameLayout not found", Toast.LENGTH_SHORT).show();
+            // Set cached background image
+            frameLayout.setBackground(new BitmapDrawable(getResources(), cachedBackgroundBitmap));
         }
+
+        frameLayout.setOnTouchListener((v, event) -> {
+            int action = event.getAction();
+            if (action == MotionEvent.ACTION_DOWN) {
+                float touchX = event.getX();
+                float touchY = event.getY();
+
+                // Get the width and height of the screen
+                DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+                int screenWidth = displayMetrics.widthPixels;
+                int screenHeight = displayMetrics.heightPixels;
+
+                // Calculate scaling factors
+                float scaleX = (float) screenWidth / 568; // assuming your original width is 568px
+                float scaleY = (float) screenHeight / 694; // assuming your original height is 694px
+
+                // Scale the touch coordinates
+                float scaledX = touchX / scaleX;
+                float scaledY = touchY / scaleY;
+
+                Log.d("TouchTest", "Scaled Touch coordinates: X = " + scaledX + ", Y = " + scaledY);
+                getBuildingData(scaledX, scaledY);
+            }
+            return false;
+        });
 
         return view;
     }
@@ -585,5 +564,23 @@ public class Home extends Fragment {
             }
         }
         return true;
+    }
+    private void loadBackgroundImageFromFirebase() {
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference().child("images/640037/school.png");
+        try {
+            File localFile = File.createTempFile("school", "png");
+
+            storageRef.getFile(localFile).addOnSuccessListener(taskSnapshot -> {
+                Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+                // Cache the loaded background image
+                cachedBackgroundBitmap = bitmap;
+                frameLayout.setBackground(new BitmapDrawable(getResources(), bitmap));
+            }).addOnFailureListener(exception -> {
+                Toast.makeText(requireContext(), "Failed to download image", Toast.LENGTH_SHORT).show();
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
