@@ -232,10 +232,11 @@ public class TaskList extends Fragment {
                                 String time = itemSnapshot2.child("time").getValue(String.class);
                                 String role = itemSnapshot2.child("role").getValue(String.class);
                                 String listObject = itemSnapshot2.child("object").getValue(String.class);
+                                String descriptionPlace = itemSnapshot2.child("Description of place").getValue(String.class);
 
                                 // Create a DataClass object
                                 Log.e("lol3", itemSnapshot3.getKey().toString());
-                                DataClass dataClass = new DataClass(name, description, time, imageUrl, role, itemSnapshot.getKey().toString(), user, listObject, itemSnapshot3.getKey().toString());
+                                DataClass dataClass = new DataClass(name, description, time, imageUrl, role, itemSnapshot.getKey().toString(), user, listObject, itemSnapshot3.getKey().toString(),descriptionPlace);
                                 dataClass.setKey(itemSnapshot.getKey().toString() + "-" + itemSnapshot2.getKey().toString());
                                 dataList.add(dataClass);
                                 // Now, you can use the dataClass object as needed
@@ -247,10 +248,11 @@ public class TaskList extends Fragment {
                                 String time = itemSnapshot2.child("time").getValue(String.class);
                                 String role = itemSnapshot2.child("role").getValue(String.class);
                                 String listObject = itemSnapshot2.child("object").getValue(String.class);
+                                String descriptionPlace = itemSnapshot2.child("Description of place").getValue(String.class);
 
                                 // Create a DataClass object
                                 Log.e("lol3", itemSnapshot3.getKey().toString());
-                                DataClass dataClass = new DataClass(name, description, time, imageUrl, role, itemSnapshot.getKey().toString(), user, listObject, itemSnapshot3.getKey().toString());
+                                DataClass dataClass = new DataClass(name, description, time, imageUrl, role, itemSnapshot.getKey().toString(), user, listObject, itemSnapshot3.getKey().toString(),descriptionPlace);
                                 dataClass.setKey(itemSnapshot.getKey().toString() + "-" + itemSnapshot2.getKey().toString());
                                 dataList.add(dataClass);
                             }
@@ -308,8 +310,9 @@ public class TaskList extends Fragment {
                             String whoClose = taskSnapshot.child("who close").getValue(String.class);
                             String whoOpen = taskSnapshot.child("who open").getValue(String.class);
                             String whoOpenEmail = taskSnapshot.child("who open(email)").getValue(String.class);
+                            String descriptionPlace = taskSnapshot.child("Description of place").getValue(String.class);
 
-                            DataClass dataClass = new DataClass(whoClose, description, whenClose, "dont use image", "נסגר", buildingSnapshot.getKey().toString(), user, object, "no");
+                            DataClass dataClass = new DataClass(whoClose, description, whenClose, "dont use image", "נסגר", buildingSnapshot.getKey().toString(), user, object, "no",descriptionPlace);
                             Log.e("description", description);
                             dataClass.setKey(buildingSnapshot.getKey().toString() + "-" + taskSnapshot.getKey().toString());
                             dataList.add(dataClass);
@@ -324,8 +327,9 @@ public class TaskList extends Fragment {
                             String whoClose = taskSnapshot.child("who close").getValue(String.class);
                             String whoOpen = taskSnapshot.child("who open").getValue(String.class);
                             String whoOpenEmail = taskSnapshot.child("who open(email)").getValue(String.class);
+                            String descriptionPlace = taskSnapshot.child("Description of place").getValue(String.class);
 
-                            DataClass dataClass = new DataClass(whoClose, description, whenClose, "dont use image", "נסגר", buildingSnapshot.getKey().toString(), user, object, "no");
+                            DataClass dataClass = new DataClass(whoClose, description, whenClose, "dont use image", "נסגר", buildingSnapshot.getKey().toString(), user, object, "no",descriptionPlace);
                             Log.e("description", description);
                             dataClass.setKey(buildingSnapshot.getKey().toString() + "-" + taskSnapshot.getKey().toString());
                             dataList.add(dataClass);
@@ -377,9 +381,10 @@ public class TaskList extends Fragment {
                             String time = taskSnapshot.child("time").getValue(String.class);
                             String role = taskSnapshot.child("role").getValue(String.class);
                             String listObject = taskSnapshot.child("object").getValue(String.class);
+                            String descriptionPlace = taskSnapshot.child("Description of place").getValue(String.class);
 
                             // Create a DataClass object
-                            DataClass dataClass = new DataClass(name, description, time, imageUrl, role, buildingSnapshot.getKey().toString(), user, listObject,urgency);
+                            DataClass dataClass = new DataClass(name, description, time, imageUrl, role, buildingSnapshot.getKey().toString(), user, listObject,urgency,descriptionPlace);
                             dataClass.setKey(buildingSnapshot.getKey().toString() + "-" + taskSnapshot.getKey().toString());
                             dataList.add(dataClass);
 
@@ -393,9 +398,10 @@ public class TaskList extends Fragment {
                             String time = taskSnapshot.child("time").getValue(String.class);
                             String role = taskSnapshot.child("role").getValue(String.class);
                             String listObject = taskSnapshot.child("object").getValue(String.class);
+                            String descriptionPlace = taskSnapshot.child("Description of place").getValue(String.class);
 
                             // Create a DataClass object
-                            DataClass dataClass = new DataClass(name, description, time, imageUrl, role, buildingSnapshot.getKey().toString(), user, listObject,urgency);
+                            DataClass dataClass = new DataClass(name, description, time, imageUrl, role, buildingSnapshot.getKey().toString(), user, listObject,urgency,descriptionPlace);
                             dataClass.setKey(buildingSnapshot.getKey().toString() + "-" + taskSnapshot.getKey().toString());
                             dataList.add(dataClass);
                         }

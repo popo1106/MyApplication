@@ -8,12 +8,16 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -21,6 +25,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -31,14 +36,18 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -48,102 +57,274 @@ import java.util.List;
 import java.util.Map;
 
 public class Home extends Fragment {
-    Button button,button2,button3,button4,button5,button6,button6B;
+    private FrameLayout frameLayout;
+    User user;
+    Spinner numberSpinner,urgencySpinner;
     private static final int REQUEST_IMAGE_GALLERY = 1;
     private static final int REQUEST_PERMISSION = 200;
-    int selectedInt = 1500;
-    Spinner numberSpinner,objectSpinner,urgencySpinner;
-    ImageView myimage;
-    String name;
+    Uri selectedImageUri;
+
+    String buildingNameString;
+    String imageUrl,urgencyLevel,formattedDateTime,description,descriptionPla;
+    int selectedInt = 1500,flagImage;
+    ImageView selectOptionsButton,myimage;
+    StringBuilder selectedOptions ;
     ArrayAdapter<String> adapter;
-    Uri selectedImageUri,stImage;
-    String imageUrl;
-    String description;
-    String formattedDateTime;
-    String role;
-    User user;
-    int flagImage;
-    ImageView selectOptionsButton;
-    TextView selectedOptionsTextView;
     String[] listItems;
     boolean[] checkedItems;
-    StringBuilder selectedOptions ;
-    String urgencyLevel;
-
+    TextView selectedOptionsTextView;
     ArrayList<Integer> selectedItems = new ArrayList<>();
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        View view=  inflater.inflate(R.layout.fragment_home, container, false);
+        frameLayout = view.findViewById(R.id.frameLayout);
         Bundle bundle = this.getArguments();
         if(getArguments() != null) {
             user = (User) getArguments().getSerializable("name");
+
         }
         if(user.getLevel().equals("מנהל-ת"))
         {
             setTopMargin(view, 40);
         }
-        role = user.getLevel();
-        name = user.getUserName();
-        selectedOptions = new StringBuilder();
         flagImage=0;
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference();
-        button =view.findViewById(R.id.building100);
-        button2 =view.findViewById(R.id.building200);
-        button3 =view.findViewById(R.id.building300);
-        button4 =view.findViewById(R.id.building400);
-        button5 =view.findViewById(R.id.building500);
-        button6 =view.findViewById(R.id.building600);
-        button6B =view.findViewById(R.id.building600Part2);
-        button.setOnClickListener(new View.OnClickListener() {
+        selectedOptions = new StringBuilder();
+        if (frameLayout != null) {
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            StorageReference storageRef = storage.getReference().child("images/640037/school.png");
+            try {
+                File localFile = File.createTempFile("school", "png");
 
-            @Override
+                storageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                        Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+                        frameLayout.setBackground(new BitmapDrawable(getResources(), bitmap));
 
-            public void onClick(View view) {
-                showAlertDialog(100);
+                        frameLayout.setOnTouchListener(new View.OnTouchListener() {
+                            @Override
+                            public boolean onTouch(View v, MotionEvent event) {
+                                int action = event.getAction();
+                                if (action == MotionEvent.ACTION_DOWN) {
+                                    float touchX = event.getX();
+                                    float touchY = event.getY();
+
+                                    // Get the width and height of the screen
+                                    DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+                                    int screenWidth = displayMetrics.widthPixels;
+                                    int screenHeight = displayMetrics.heightPixels;
+
+                                    // Calculate scaling factors
+                                    float scaleX = (float) screenWidth / 568; // assuming your original width is 568px
+                                    float scaleY = (float) screenHeight / 694; // assuming your original height is 694px
+
+                                    // Scale the touch coordinates
+                                    float scaledX = touchX / scaleX;
+                                    float scaledY = touchY / scaleY;
+
+                                    Log.d("TouchTest", "Scaled Touch coordinates: X = " + scaledX + ", Y = " + scaledY);
+                                    getBuildingData(scaledX,scaledY);
+                                }
+                                return false;
+                            }
+                        });
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        Toast.makeText(requireContext(), "Failed to download image", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        });
-        button2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showAlertDialog(200);
-            }
-        });
-        button3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showAlertDialog(300);
-            }
-        });
-        button4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showAlertDialog(400);
-            }
-        });
-        button5.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showAlertDialog(500);
-            }
-        });
-        button6.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showAlertDialog(600);
-            }
-        });
-        button6B.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showAlertDialog(600);
-            }
-        });
+        } else {
+            Toast.makeText(requireContext(), "FrameLayout not found", Toast.LENGTH_SHORT).show();
+        }
+
         return view;
     }
 
+    private void getBuildingData(float x, float y)
+    {
+        FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
+
+
+        mDatabase.getReference().child("organization").child(user.getOrg()).child("building").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // Assuming there's only one child node under "building"
+
+                for (DataSnapshot buildingSnapshot : dataSnapshot.getChildren()) {
+
+
+                    // Get building name
+                    String buildingName = buildingSnapshot.getKey();
+
+                    // Get coordinates array [l,t,r,b]
+                    String coordinatesString = buildingSnapshot.getValue(String.class);
+
+                    // Remove brackets "[" and "]" and split the string to extract individual coordinates
+                    String[] coordinatesArray = coordinatesString.substring(1, coordinatesString.length() - 1).split(",");
+
+                    // Parse coordinates to integers
+                    int left = Integer.parseInt(coordinatesArray[0]);
+                    int top = Integer.parseInt(coordinatesArray[1]);
+                    int right = Integer.parseInt(coordinatesArray[2]);
+                    int bottom = Integer.parseInt(coordinatesArray[3]);
+
+                    if(buildingName.equals("600B"))
+                    {
+                        buildingName = "600";
+                    }
+                    if (isWithinBounds(x, y, left, right, top, bottom)) {
+                        if(isNumeric(buildingName)) {
+                            showAlertDialog(Integer.valueOf(buildingName));
+                        }
+                        else{
+                            showAlertDialogString(buildingName);
+                        }
+                        Toast.makeText(requireContext(), "Name: " + buildingName + ", Left: " + left + ", Top: " + top + ", Right: " + right + ", Bottom: " + bottom, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Handle possible errors.
+                Log.w("DatabaseError", "loadPost:onCancelled", databaseError.toException());
+            }
+        });
+    }
+    public void uploadData()
+    {
+        if(selectedInt == 1500)
+        {
+            DataClass dataClass = new DataClass(user.getUserName(),description,formattedDateTime,imageUrl, user.getLevel(),buildingNameString,user,"לא נבחרה אופציה",urgencySpinner.getSelectedItem().toString(),descriptionPla);
+        }
+        else {
+            DataClass dataClass = new DataClass(user.getUserName(), description, formattedDateTime, imageUrl, user.getLevel(), String.valueOf(selectedInt), user, selectedOptions.toString(), urgencySpinner.getSelectedItem().toString(), "לא נבחרה אופציה");
+        }
+    }
+    private void setupUrgencySpinner(Dialog dialog) {
+        urgencySpinner = dialog.findViewById(R.id.spinner_urgency);
+
+        List<String> urgencyLevels = new ArrayList<>();
+        urgencyLevels.add("High");
+        urgencyLevels.add("Medium");
+        urgencyLevels.add("Low");
+
+        ArrayAdapter<String> urgencyAdapter = new ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_item, urgencyLevels) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View view = super.getView(position, convertView, parent);
+                setUrgencyTextColor(view, position);
+                return view;
+            }
+
+            @Override
+            public View getDropDownView(int position, View convertView, ViewGroup parent) {
+                View view = super.getDropDownView(position, convertView, parent);
+                setUrgencyTextColor(view, position);
+                return view;
+            }
+
+            private void setUrgencyTextColor(View view, int position) {
+                TextView textView = (TextView) view;
+                switch (position) {
+                    case 0:
+                        textView.setTextColor(Color.RED);
+                        break;
+                    case 1:
+                        textView.setTextColor(Color.parseColor("#FFA500")); // Orange color
+                        break;
+                    case 2:
+                        textView.setTextColor(Color.GREEN);
+                        break;
+                }
+            }
+        };
+
+        urgencyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        urgencySpinner.setAdapter(urgencyAdapter);
+
+        urgencySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                urgencyLevel = urgencyLevels.get(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                urgencyLevel = "Low"; // Default to low urgency if nothing is selected
+            }
+        });
+    }
+
+    private  void showAlertDialogString(String building)
+    {
+        final Dialog dialog = new Dialog(requireContext());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(true);
+        Log.e("lol3","jssjk1");
+        dialog.setContentView(R.layout.alert_dialog_string);
+        EditText descriptionEt = dialog.findViewById(R.id.description);
+        EditText descriptionPlace = dialog.findViewById(R.id.descriptionPlace);
+        Button uploadImage = dialog.findViewById(R.id.upLoadImage);
+        myimage = dialog.findViewById(R.id.myImage);
+        Log.e("lol1","jssjk1");
+        setupUrgencySpinner(dialog);
+
+
+        uploadImage.setOnClickListener(view2 ->{
+            checkPermission();
+        } );
+        Log.e("lol2","jssjk1");
+        Button sumbit = dialog.findViewById(R.id.send);
+        sumbit.setOnClickListener(view1 -> {
+            description = descriptionEt.getText().toString();
+            descriptionPla = descriptionPlace.getText().toString();
+            if (!description.isEmpty()) {
+                if(!descriptionPla.isEmpty()) {
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("open-task").child(user.getOrg()).child(urgencySpinner.getSelectedItem().toString()).child(building);
+                    LocalDateTime now = LocalDateTime.now();
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy, HH:mm:ss");
+                    formattedDateTime = now.format(formatter);
+                    buildingNameString  = building;
+                    // Create a HashMap to store the task data
+                    Map<String, Object> newTask = new HashMap<>();
+                    newTask.put("Description", description);
+                    newTask.put("time", formattedDateTime);
+                    newTask.put("name", user.getUserName());
+                    newTask.put("email", user.getEmail());
+                    newTask.put("role", user.getLevel());
+                    newTask.put("Description of place", descriptionPla);
+                    newTask.put("object", "לא נבחרה אופציה");
+
+                    // Check if an image was selected
+                    if (flagImage == 1) {
+                        uploadImageToFirebase(selectedImageUri, newTask, databaseReference, dialog);
+                    } else {
+                        newTask.put("imageUrl", "dont use image");
+                        saveTaskToFirebase(newTask, databaseReference, dialog);
+                    }
+                    flagImage = 0;
+                }
+                else {
+                    Toast.makeText(requireContext(), "Please enter a description for the place", Toast.LENGTH_SHORT).show();
+                }
+            }
+            else {
+                Toast.makeText(requireContext(), "Please enter a description", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        dialog.show();
+        uploadData();
+    }
     private void showAlertDialog(int building) {
         final Dialog dialog = new Dialog(requireContext());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -238,9 +419,10 @@ public class Home extends Fragment {
                 Map<String, Object> newTask = new HashMap<>();
                 newTask.put("Description", description);
                 newTask.put("time", formattedDateTime);
-                newTask.put("name", name);
+                newTask.put("name", user.getUserName());
                 newTask.put("email", user.getEmail());
                 newTask.put("role", user.getLevel());
+                newTask.put("Description of place", "לא נבחרה אופציה");
                 Log.e("lol7","k");
                 if(selectedOptions.toString()== null||selectedOptions.toString().isEmpty())
                 {
@@ -268,6 +450,31 @@ public class Home extends Fragment {
         dialog.show();
         uploadData();
     }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_IMAGE_GALLERY && resultCode == Activity.RESULT_OK && data != null) {
+            selectedImageUri = data.getData();
+            flagImage = 1;
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(requireContext().getContentResolver(), selectedImageUri);
+                myimage.setImageBitmap(bitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(requireContext(), "Failed to load image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+    private void checkPermission() {
+        if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            // Permission is not granted, request it
+            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSION);
+        } else {
+            // Permission is already granted, proceed with gallery access
+            selectImage();
+        }
+    }
     public void createSpinner(Dialog dialog, int building) {
         numberSpinner = dialog.findViewById(R.id.spinner_class);
 //        objectSpinner = dialog.findViewById(R.id.spinner_object);
@@ -294,7 +501,7 @@ public class Home extends Fragment {
     }
     private void uploadImageToFirebase(Uri imageUri, Map<String, Object> newTask, DatabaseReference databaseReference, Dialog dialog) {
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-        StorageReference imageRef = storageRef.child("images/" + System.currentTimeMillis() + ".jpg");
+        StorageReference imageRef = storageRef.child("images/"+user.getOrg()+"/" + System.currentTimeMillis() + ".jpg");
 
         imageRef.putFile(imageUri)
                 .addOnSuccessListener(taskSnapshot -> {
@@ -308,7 +515,6 @@ public class Home extends Fragment {
                     Toast.makeText(requireContext(), "Failed to upload image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
-
     private void saveTaskToFirebase(Map<String, Object> newTask, DatabaseReference databaseReference, Dialog dialog) {
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -332,37 +538,11 @@ public class Home extends Fragment {
             }
         });
     }
-
     private void selectImage() {
         Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(galleryIntent, REQUEST_IMAGE_GALLERY);
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == REQUEST_IMAGE_GALLERY && resultCode == Activity.RESULT_OK && data != null) {
-            selectedImageUri = data.getData();
-            flagImage = 1;
-            try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(requireContext().getContentResolver(), selectedImageUri);
-                myimage.setImageBitmap(bitmap);
-            } catch (IOException e) {
-                e.printStackTrace();
-                Toast.makeText(requireContext(), "Failed to load image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-    private void checkPermission() {
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            // Permission is not granted, request it
-            ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSION);
-        } else {
-            // Permission is already granted, proceed with gallery access
-            selectImage();
-        }
-    }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -376,64 +556,8 @@ public class Home extends Fragment {
             }
         }
     }
-    private void setupUrgencySpinner(Dialog dialog) {
-        urgencySpinner = dialog.findViewById(R.id.spinner_urgency);
-
-        List<String> urgencyLevels = new ArrayList<>();
-        urgencyLevels.add("High");
-        urgencyLevels.add("Medium");
-        urgencyLevels.add("Low");
-
-        ArrayAdapter<String> urgencyAdapter = new ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_item, urgencyLevels) {
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-                View view = super.getView(position, convertView, parent);
-                setUrgencyTextColor(view, position);
-                return view;
-            }
-
-            @Override
-            public View getDropDownView(int position, View convertView, ViewGroup parent) {
-                View view = super.getDropDownView(position, convertView, parent);
-                setUrgencyTextColor(view, position);
-                return view;
-            }
-
-            private void setUrgencyTextColor(View view, int position) {
-                TextView textView = (TextView) view;
-                switch (position) {
-                    case 0:
-                        textView.setTextColor(Color.RED);
-                        break;
-                    case 1:
-                        textView.setTextColor(Color.parseColor("#FFA500")); // Orange color
-                        break;
-                    case 2:
-                        textView.setTextColor(Color.GREEN);
-                        break;
-                }
-            }
-        };
-
-        urgencyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        urgencySpinner.setAdapter(urgencyAdapter);
-
-        urgencySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                urgencyLevel = urgencyLevels.get(position);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                urgencyLevel = "Low"; // Default to low urgency if nothing is selected
-            }
-        });
-    }
-    public void uploadData()
-    {
-        DataClass dataClass = new DataClass(name,description,formattedDateTime,imageUrl, role,String.valueOf(selectedInt),user,selectedOptions.toString(),urgencySpinner.getSelectedItem().toString());
-
+    private boolean isWithinBounds(float x, float y,int LEFT, int RIGHT, int TOP, int BOTTOM) {
+        return x >= LEFT && x <= RIGHT && y >= TOP && y <= BOTTOM;
     }
     private void setTopMargin(View view, int topMarginDp) {
         // Convert dp to pixels
@@ -450,10 +574,16 @@ public class Home extends Fragment {
             view.setLayoutParams(params);
         }
     }
-
     private int dpToPx(int dp) {
         float density = getResources().getDisplayMetrics().density;
         return Math.round(dp * density);
     }
-
+    public static boolean isNumeric(String str) {
+        for (char c : str.toCharArray()) {
+            if (!Character.isDigit(c)) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

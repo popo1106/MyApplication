@@ -4,19 +4,9 @@ import java.io.Serializable;
 
 public class DataClass implements Serializable {
 
-    private String userName;
+    private String userName,time,Description,imageUrl,NumClass,key,Role,listObject,Urgency,descriptionPlace;
 
-    private String Description;
-    private String time;
-    private String imageUrl;
-    private String NumClass;
-    private String key;
-    private String Role;
     private User currentUser;
-    private String listObject;
-    private String Urgency;
-
-
     public String getKey() {
         return key;
     }
@@ -25,7 +15,7 @@ public class DataClass implements Serializable {
         this.key = key;
     }
 
-    public DataClass(String userName, String description, String time, String imageUrl,String Role, String NumClass,User currentUser,String listObject, String Urgency) {
+    public DataClass(String userName, String description, String time, String imageUrl,String Role, String NumClass,User currentUser,String listObject, String Urgency,String descriptionPlace) {
         this.userName = userName;
         this.Description = description;
         this.time = time;
@@ -35,10 +25,14 @@ public class DataClass implements Serializable {
         this.currentUser = currentUser;
         this.listObject = listObject;
         this.Urgency = Urgency;
+        this.descriptionPlace = descriptionPlace;
     }
 
     public String getUserName() {
         return userName;
+    }
+    public String getDescriptionPlace() {
+        return descriptionPlace;
     }
     public String getUrgency() {
         return Urgency;

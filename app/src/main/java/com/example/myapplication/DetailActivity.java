@@ -32,7 +32,7 @@ import java.util.Map;
 
 public class DetailActivity extends AppCompatActivity {
 
-    TextView detailDesc, detailTitle, detailLang,listObject2Fix;
+    TextView detailDesc, detailTitle, detailLang,listObject2Fix,titleObject;
     ImageView detailImage;
     TaskList TL = new TaskList();
     FloatingActionButton deleteButton;
@@ -56,15 +56,16 @@ public class DetailActivity extends AppCompatActivity {
         detailLang = findViewById(R.id.detailLang);
         deleteButton = findViewById(R.id.deleteButton);
         listObject2Fix = findViewById(R.id.listObject);
+        titleObject = findViewById(R.id.titleObject);
         backButton = findViewById(R.id.backIcon);
         if (getIntent().getExtras() != null) {
             detail = (DataClass) getIntent().getSerializableExtra("detail");
             detailDesc.setText(detail.getDescription());
             detailTitle.setText("class: " + detail.getNumClass());
             detailLang.setText(detail.getTime());
-            if (detail.listObject() == null || detail.listObject().isEmpty()) {
-                listObject2Fix.setText("לא נבחרה אופציה");
-
+            if ((detail.listObject() == null || detail.listObject().isEmpty() || detail.listObject().equals("לא נבחרה אופציה"))&&!detail.getDescriptionPlace().equals("לא נבחרה אופציה")) {
+                titleObject.setText("Description of place:");
+                listObject2Fix.setText(detail.getDescriptionPlace());
             } else {
                 listObject2Fix.setText(detail.listObject());
             }
