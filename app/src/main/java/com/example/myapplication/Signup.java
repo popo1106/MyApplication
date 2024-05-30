@@ -38,7 +38,7 @@ public class Signup extends AppCompatActivity {
     String selectedValue, selectedValue2;
     private FirebaseAuth auth;
     Spinner spinner, spinner2;
-    private EditText signupEmail, signupPassword, signupId, signupName;
+    private EditText signupEmail, signupPassword, signupId, signupName,signupPhone;
     private Button signupButton;
     private TextView loginRedirectText;
 
@@ -50,6 +50,7 @@ public class Signup extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         signupEmail = findViewById(R.id.signup_email);
         signupId = findViewById(R.id.signup_id);
+        signupPhone = findViewById(R.id.signup_PhoneNumber);
         signupName = findViewById(R.id.signup_Name);
         signupPassword = findViewById(R.id.signup_password);
 //        signupButton = findViewById(R.id.signup_button);
@@ -155,6 +156,7 @@ public class Signup extends AppCompatActivity {
         String pass = signupPassword.getText().toString().trim();
         String name = signupName.getText().toString().trim();
         String Id = signupId.getText().toString().trim();
+        String phone = signupPhone.getText().toString().trim();
 
         if (email.isEmpty()){
             signupEmail.setError("האימייל לא יכול להיות ריק");
@@ -172,8 +174,16 @@ public class Signup extends AppCompatActivity {
             signupId.setError("התעודת זהות לא יכולה להיות ריקה");
             return; // Return early if ID is empty
         }
+        if (phone.isEmpty()){
+            signupPhone.setError("מספר טלפון לא יכול להיות ריק");
+            return; // Return early if ID is empty
+        }
         if (Id.length()!=9||(!(isIsraeliIdNumber(Id)))){
             signupId.setError("התעודת זהות לא תקינה");
+            return; // Return early if ID is empty
+        }
+        if (!isValidIsraeliCellPhoneNumber(phone)){
+            signupPhone.setError("מספר טלפון לא תקין");
             return; // Return early if ID is empty
         }
 
@@ -200,7 +210,7 @@ public class Signup extends AppCompatActivity {
                             } else {
 
                                 // ID doesn't exist in both databases, proceed with sign-up
-                                createUser(email, pass, name, Id);
+                                createUser(email, pass, name, Id,phone);
                             }
                         }
                     });
@@ -241,7 +251,7 @@ public class Signup extends AppCompatActivity {
     }
 
 
-    private void createUser(String email, String pass, String name, String Id) {
+    private void createUser(String email, String pass, String name, String Id,String phone) {
         // Proceed with creating the user
         auth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
@@ -264,6 +274,7 @@ public class Signup extends AppCompatActivity {
                     userData.put("name", name);
                     userData.put("Id", Id);
                     userData.put("email", email);
+                    userData.put("phone number", phone);
                     userData.put("time", dateFormat.format(date));
                     // Add other user data as needed
 
@@ -302,5 +313,36 @@ public class Signup extends AppCompatActivity {
         }
 
         return sum % 10 == 0;
+    }
+    public static boolean isValidIsraeliCellPhoneNumber(String phoneNumber) {
+        // Check if the phone number is exactly 10 digits long
+        if (phoneNumber.length() != 10) {
+            Log.e("not4","lol");
+            return false;
+        }
+
+        // Check if the phone number starts with "05"
+        if (!phoneNumber.startsWith("05")) {
+            Log.e("not2","lol");
+            return false;
+        }
+
+        // Check if the third digit is between 0 and 9
+        char thirdDigit = phoneNumber.charAt(2);
+        if (thirdDigit < '0' || thirdDigit > '9') {
+            Log.e("not3","lol");
+            return false;
+        }
+
+        // Check if the remaining characters are digits
+        for (int i = 3; i < phoneNumber.length(); i++) {
+            if (!Character.isDigit(phoneNumber.charAt(i))) {
+                Log.e("not1","lol");
+                return false;
+            }
+        }
+        Log.e("helloMaor","lol");
+        // If all checks pass, the phone number is valid
+        return true;
     }
 }

@@ -49,6 +49,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,8 +65,8 @@ public class Home extends Fragment {
     Uri selectedImageUri;
 
     String buildingNameString;
-    String imageUrl,urgencyLevel,formattedDateTime,description,descriptionPla;
-    int selectedInt = 1500,flagImage;
+    String imageUrl,urgencyLevel,formattedDateTime,description,descriptionPla,selectedInt = "1500";
+    int flagImage;
     ImageView selectOptionsButton,myimage;
     StringBuilder selectedOptions ;
     ArrayAdapter<String> adapter;
@@ -142,9 +143,8 @@ public class Home extends Fragment {
 
                     // Get building name
                     String buildingName = buildingSnapshot.getKey();
-
                     // Get coordinates array [l,t,r,b]
-                    String coordinatesString = buildingSnapshot.getValue(String.class);
+                    String coordinatesString = buildingSnapshot.child("cord").getValue(String.class);
 
                     // Remove brackets "[" and "]" and split the string to extract individual coordinates
                     String[] coordinatesArray = coordinatesString.substring(1, coordinatesString.length() - 1).split(",");
@@ -180,7 +180,7 @@ public class Home extends Fragment {
     }
     public void uploadData()
     {
-        if(selectedInt == 1500)
+        if(selectedInt.equals("1500"))
         {
             DataClass dataClass = new DataClass(user.getUserName(),description,formattedDateTime,imageUrl, user.getLevel(),buildingNameString,user,"לא נבחרה אופציה",urgencySpinner.getSelectedItem().toString(),descriptionPla);
         }
@@ -248,20 +248,17 @@ public class Home extends Fragment {
         final Dialog dialog = new Dialog(requireContext());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(true);
-        Log.e("lol3","jssjk1");
         dialog.setContentView(R.layout.alert_dialog_string);
         EditText descriptionEt = dialog.findViewById(R.id.description);
         EditText descriptionPlace = dialog.findViewById(R.id.descriptionPlace);
         Button uploadImage = dialog.findViewById(R.id.upLoadImage);
         myimage = dialog.findViewById(R.id.myImage);
-        Log.e("lol1","jssjk1");
         setupUrgencySpinner(dialog);
 
 
         uploadImage.setOnClickListener(view2 ->{
             checkPermission();
         } );
-        Log.e("lol2","jssjk1");
         Button sumbit = dialog.findViewById(R.id.send);
         sumbit.setOnClickListener(view1 -> {
             description = descriptionEt.getText().toString();
@@ -313,6 +310,7 @@ public class Home extends Fragment {
         Button uploadImage = dialog.findViewById(R.id.upLoadImage);
         myimage = dialog.findViewById(R.id.myImage);
         createSpinner(dialog,building);
+        Log.e("kokok912","Skk");
         setupUrgencySpinner(dialog);
         selectOptionsButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -368,13 +366,22 @@ public class Home extends Fragment {
                 dialog5.show();
             }
         });
+        Log.e("kokok12","Skk");
         numberSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-                // Get the selected number from the Spinner
-                String selectedNumber = adapter.getItem(position);
-                selectedInt = Integer.parseInt(selectedNumber);
+                Log.e("kokok0012", "Skk");
 
+                selectedInt = numberSpinner.getSelectedItem().toString();
+                if (selectedInt.equals("שירותים א") || selectedInt.equals("שירותים ב"))
+                {
+                    selectedInt =String.valueOf(building)+"-"+selectedInt;
+                }
+                if(selectedInt.equals("אחר"))
+                {
+                    selectedInt = String.valueOf(building)+ "-"+"בניין";
+                }
+                Log.e("kokok13332","Skk");
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
@@ -385,6 +392,7 @@ public class Home extends Fragment {
         uploadImage.setOnClickListener(view2 ->{
             checkPermission();
         } );
+        Log.e("kokok5335212","Skk");
         Button sumbit = dialog.findViewById(R.id.send);
         sumbit.setOnClickListener(view1 -> {
             description = descriptionEt.getText().toString();
@@ -402,7 +410,6 @@ public class Home extends Fragment {
                 newTask.put("email", user.getEmail());
                 newTask.put("role", user.getLevel());
                 newTask.put("Description of place", "לא נבחרה אופציה");
-                Log.e("lol7","k");
                 if(selectedOptions.toString()== null||selectedOptions.toString().isEmpty())
                 {
                     newTask.put("object", "לא נבחרה אופציה");
@@ -456,22 +463,44 @@ public class Home extends Fragment {
     }
     public void createSpinner(Dialog dialog, int building) {
         numberSpinner = dialog.findViewById(R.id.spinner_class);
-//        objectSpinner = dialog.findViewById(R.id.spinner_object);
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference buildingRef = database.getReference("organization")
+                .child(user.getOrg())
+                .child("building")
+                .child(String.valueOf(building))
+                .child("class");
 
-        // Create a list of numbers from 0 to 16
-        List<String> numbers = new ArrayList<>();
-        for (int i = 0; i <= 16; i++) {
-            numbers.add(String.valueOf(building+i));
-        }
+        buildingRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    String classesString = dataSnapshot.getValue(String.class);
+                    if (classesString != null) {
+                        // Remove square brackets and split the string into a list of class names
+                        String cleanedClassesString = classesString.replace("[", "").replace("]", "");
+                        List<String> numbers = Arrays.asList(cleanedClassesString.split(","));
 
-        // Create an ArrayAdapter using the list of numbers
-        adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, numbers);
+                        // Create an ArrayAdapter using the list of numbers
+                        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, numbers);
 
-        // Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        // Specify the layout to use when the list of choices appears
+                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        // Apply the adapter to the spinner
-        numberSpinner.setAdapter(adapter);
+                        // Apply the adapter to the spinner
+                        numberSpinner.setAdapter(adapter);
+                    } else {
+                        Log.e("createSpinner", "The 'class' field is null.");
+                    }
+                } else {
+                    Log.e("createSpinner", "No data found for the specified building.");
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e("createSpinner", "Database error: " + databaseError.getMessage());
+            }
+        });
 
         selectOptionsButton = dialog.findViewById(R.id.list_object);
         selectedOptionsTextView = dialog.findViewById(R.id.selectedOptionsTextView);

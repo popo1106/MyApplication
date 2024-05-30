@@ -3,9 +3,12 @@ package com.example.myapplication;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,15 +24,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class SendOTPActivity extends AppCompatActivity {
 
     private EditText inputMobile;
-
+    String phoneNumber;
     TextView Error;
-
-    boolean flagePhoone;
+    Spinner spinner2,orgSpinner;
     private Button buttonGetOTP;
     @SuppressLint("MissingInflatedId")
     @Override
@@ -37,79 +41,156 @@ public class SendOTPActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forget_password);
         inputMobile = findViewById(R.id.phoneNumber);
+
         buttonGetOTP = findViewById(R.id.buttonGetOTP);
         Error  = findViewById(R.id.errorPhone);
-        flagePhoone = false;
     }
-
+    protected void onStart() {
+        super.onStart();
+        createSpinner();
+    }
     public void GetOTP(View view) {
         if(inputMobile.getText().toString().trim().isEmpty())
         {
             Toast.makeText(SendOTPActivity.this, "Enter phone number",Toast.LENGTH_SHORT).show();
+            inputMobile.setError("נא להזין מספר טלפון");
             return;
         }
-
-        if(getPhoneNumber()) {
-            buttonGetOTP.setVisibility(View.INVISIBLE);
-
-
-            PhoneAuthProvider.getInstance().verifyPhoneNumber(
-                    "+972" + inputMobile.getText().toString(),
-                    60,
-                    TimeUnit.SECONDS,
-                    SendOTPActivity.this,
-                    new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-                        @Override
-                        public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential) {
-                            buttonGetOTP.setVisibility(View.VISIBLE);
-                        }
-
-                        @Override
-                        public void onVerificationFailed(@NonNull FirebaseException e) {
-                            buttonGetOTP.setVisibility(View.VISIBLE);
-                            Toast.makeText(SendOTPActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-
-                        @Override
-                        public void onCodeSent(@NonNull String verificationId, @NonNull PhoneAuthProvider.ForceResendingToken forceResendingToken) {
-                            buttonGetOTP.setVisibility(View.VISIBLE);
-                            Intent intent = new Intent(getApplicationContext(), VerifyOTPActivity.class);
-                            intent.putExtra("phoneNumber", inputMobile.getText().toString());
-                            intent.putExtra("verificationId", verificationId);
-                            startActivity(intent);
-                        }
-                    }
-            );
+        if (!inputMobile.getText().toString().startsWith("0")) {
+            // Prepend "0" to the phone number
+            phoneNumber = "0" + inputMobile.getText().toString();
         }
+        else {
+            phoneNumber = inputMobile.getText().toString();
+        }
+        Log.e("hohojk","lop");
+        checkUserByPhoneNumber(phoneNumber, new UserExistsCallback() {
+            @Override
+            public void onUserExists(boolean exists) {
+                if (exists) {
+                    // User exists
+                    buttonGetOTP.setVisibility(View.INVISIBLE);
+                    Log.e("hohojk1","lop");
 
+
+                    PhoneAuthProvider.getInstance().verifyPhoneNumber(
+                            "+972" + phoneNumber,
+                            60,
+                            TimeUnit.SECONDS,
+                            SendOTPActivity.this,
+                            new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+                                @Override
+                                public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential) {
+                                    buttonGetOTP.setVisibility(View.VISIBLE);
+                                }
+
+                                @Override
+                                public void onVerificationFailed(@NonNull FirebaseException e) {
+                                    buttonGetOTP.setVisibility(View.VISIBLE);
+                                    Toast.makeText(SendOTPActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+
+                                @Override
+                                public void onCodeSent(@NonNull String verificationId, @NonNull PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+                                    buttonGetOTP.setVisibility(View.VISIBLE);
+                                    Intent intent = new Intent(getApplicationContext(), VerifyOTPActivity.class);
+                                    intent.putExtra("phoneNumber", phoneNumber);
+                                    intent.putExtra("verificationId", verificationId);
+                                    intent.putExtra("org", orgSpinner.getSelectedItem().toString());
+                                    intent.putExtra("role", spinner2.getSelectedItem().toString());
+                                    startActivity(intent);
+                                }
+                            }
+                    );
+                } else {
+                    // User does not exist
+                    Log.d("checkUserByPhoneNumber", "User does not exist.");
+                    inputMobile.setError("מספר הטלפון לא קיים במערכת");
+                }
+            }
+        });
     }
 
 
-    public boolean getPhoneNumber() {
-        String inputPhoneNumber = inputMobile.getText().toString().trim();
-        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("Users");
-        usersRef.orderByChild("phoneNumber").equalTo(inputPhoneNumber).addListenerForSingleValueEvent(new ValueEventListener() {
+
+    public interface UserExistsCallback {
+        void onUserExists(boolean exists);
+    }
+
+    public void checkUserByPhoneNumber(String phoneNumber, UserExistsCallback callback) {
+        Log.e("hohojk3","lop");
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference usersRef = database.getReference("organization")
+                .child(orgSpinner.getSelectedItem().toString())
+                .child(spinner2.getSelectedItem().toString());
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                boolean userExists = false;
+                for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                    // Assuming each child node represents a user
+                    String userPhoneNumber = userSnapshot.child("phone number").getValue(String.class);
+                    if (userPhoneNumber != null && userPhoneNumber.equals(phoneNumber)) {
+                        // User with the given phone number found
+                        userExists = true;
+                        break;
+                    }
+                }
+                // Invoke the callback with the result
+                callback.onUserExists(userExists);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Handle error
+                Log.e("checkUserByPhoneNumber", "Database error: " + databaseError.getMessage());
+                // Invoke the callback with false on error
+                callback.onUserExists(false);
+            }
+        });
+    }
+    public void createSpinner() {
+        spinner2 = findViewById(R.id.spinner_level);
+        orgSpinner = findViewById(R.id.spinner_org);
+        List<String> orgList = new ArrayList<>();
+
+        List<String> levelList = new ArrayList<>();
+        levelList.add("מורה");
+        levelList.add("מנהל-ת");
+        levelList.add("אב-בית");
+
+        // Create an ArrayAdapter and set it to spinner2
+        ArrayAdapter<String> adapter2 = new ArrayAdapter<>(SendOTPActivity.this, android.R.layout.simple_spinner_item, levelList);
+        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner2.setAdapter(adapter2);
+
+        ArrayAdapter<String> orgAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, orgList);
+        orgAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        orgSpinner.setAdapter(orgAdapter);
+
+        // Firebase Database reference
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("organization");
+
+        // Fetch data from Firebase
+        databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    flagePhoone = true;
-                    //Error.setText("true");
-                    Toast.makeText(SendOTPActivity.this, "Phone number is correct!", Toast.LENGTH_SHORT).show();
-                    Error.setText("Phone number is correct!");
-
-
-                }else{
-                    Toast.makeText(SendOTPActivity.this, "Phone number is incorrect!", Toast.LENGTH_SHORT).show();
-                    Error.setText("Phone number is incorrect!");
-                    flagePhoone = false;
+                orgList.clear(); // Clear the list before adding new data
+                for (DataSnapshot orgSnapshot : dataSnapshot.getChildren()) {
+                    String orgName = orgSnapshot.getKey();
+                    if(!orgName.equals("building")) {
+                        orgList.add(orgName);
+                    }
                 }
+                orgAdapter.notifyDataSetChanged(); // Notify the adapter that data has changed
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Handle database errors
+                // Handle possible errors
             }
         });
-       return flagePhoone;
+
     }
 }

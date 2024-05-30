@@ -1,18 +1,19 @@
 package com.example.myapplication;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -21,13 +22,20 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.concurrent.TimeUnit;
 
 public class VerifyOTPActivity extends AppCompatActivity {
 
     private EditText Code1, Code2, Code3, Code4, Code5, Code6;
-    private String verificationId;
+
+
+    private String verificationId,org,role,phoneNumber;
     private ProgressBar progressBar;
     private TextView textMobile;
     private Button buttonVerify;
@@ -36,9 +44,10 @@ public class VerifyOTPActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_verify_otpactivity);
-
+        phoneNumber = getIntent().getStringExtra("phoneNumber");
         textMobile = findViewById(R.id.textMobile);
-        textMobile.setText(String.format("+972-%s", getIntent().getStringExtra("phoneNumber")));
+
+        textMobile.setText(String.format("+972-%s",phoneNumber));
 
         progressBar = findViewById(R.id.progressBar);
         buttonVerify = findViewById(R.id.buttonVerify);
@@ -51,6 +60,8 @@ public class VerifyOTPActivity extends AppCompatActivity {
         Code6 = findViewById(R.id.Code6);
 
         verificationId = getIntent().getStringExtra("verificationId");
+        role = getIntent().getStringExtra("role");
+        org = getIntent().getStringExtra("org");
         setupOTPInputs();
 
 
@@ -184,9 +195,29 @@ public class VerifyOTPActivity extends AppCompatActivity {
                     buttonVerify.setVisibility(View.VISIBLE);
                     if(task.isSuccessful())
                     {
-                        Intent intent = new Intent(getApplicationContext(),MainActivity2.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
+
+                        checkUserByPhoneNumber(phoneNumber, new UserExistsCallback() {
+                            @Override
+                            public void onUserExists(User user) {
+                                if (user != null) {
+                                    // User exists, do something with the user object
+                                    Log.d("UserExists", "User found: " + user.getUserName());
+                                    Intent intent = new Intent(getApplicationContext(),MainActivity2.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    intent.putExtra("user", user);
+                                    startActivity(intent);
+                                } else {
+                                    // User not found
+                                    Log.d("UserExists", "UserExists");
+                                }
+                            }
+
+                            @Override
+                            public void onError(String errorMessage) {
+                                // Handle error
+                                Log.e("UserExists", "Error: " + errorMessage);
+                            }
+                        });
                     }else{
                         Toast.makeText(VerifyOTPActivity.this, "The verification code entered was invalid", Toast.LENGTH_SHORT).show();
                     }
@@ -221,4 +252,41 @@ public class VerifyOTPActivity extends AppCompatActivity {
                 }
         );
     }
+    public interface UserExistsCallback {
+        void onUserExists(User user);
+        void onError(String errorMessage);
+    }
+
+    public void checkUserByPhoneNumber(String phoneNumber, UserExistsCallback callback) {
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference usersRef = database.getReference("organization")
+                .child(org)
+                .child(role);
+
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                    String userPhoneNumber = userSnapshot.child("phone number").getValue(String.class);
+                    if (userPhoneNumber != null && userPhoneNumber.equals(phoneNumber)) {
+                        // User with the given phone number found
+                        User user = new User(userSnapshot.child("name").getValue(String.class),userSnapshot.child("email").getValue(String.class),userSnapshot.child("Id").getValue(String.class),role,org);
+                        callback.onUserExists(user);
+                        return; // Return after invoking the callback
+                    }
+                }
+                // Invoke the callback with null if user not found
+                callback.onUserExists(null);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Handle error
+                String errorMessage = "Database error: " + databaseError.getMessage();
+                callback.onError(errorMessage);
+            }
+        });
+    }
+
 }
