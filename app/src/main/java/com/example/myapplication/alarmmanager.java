@@ -72,12 +72,7 @@ public class alarmmanager extends AppCompatActivity {
             }
         });
 
-        findViewById(R.id.cancelAlarm).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                cancelAlarm();
-            }
-        });
+
     }
 
     private void showTimePicker() {
@@ -117,15 +112,6 @@ public class alarmmanager extends AppCompatActivity {
         } else {
             Toast.makeText(alarmmanager.this, "Please select a time first", Toast.LENGTH_SHORT).show();
         }
-    }
-    private void cancelAlarm() {
-        Intent intent = new Intent(alarmmanager.this, AlarmReceiver.class);
-        pendingIntent = PendingIntent.getBroadcast(alarmmanager.this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
-        if (alarmManager == null) {
-            alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        }
-        alarmManager.cancel(pendingIntent);
-        Toast.makeText(alarmmanager.this, "Alarm Canceled", Toast.LENGTH_SHORT).show();
     }
 
     private void createNotificationChannel() {

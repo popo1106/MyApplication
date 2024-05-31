@@ -15,7 +15,8 @@ public class DataClass implements Serializable {
         this.key = key;
     }
 
-    public DataClass(String userName, String description, String time, String imageUrl,String Role, String NumClass,User currentUser,String listObject, String Urgency,String descriptionPlace,String whoClose, String whenClose) {
+    public DataClass(String userName, String description, String time, String imageUrl,String Role, String NumClass,User currentUser,String listObject, String Urgency,String descriptionPlace,String whoClose, String whenClose)
+    {
         this.userName = userName;
         this.Description = description;
         this.time = time;
