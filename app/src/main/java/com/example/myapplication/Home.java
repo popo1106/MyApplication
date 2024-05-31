@@ -56,6 +56,7 @@ import java.util.Map;
 
 public class Home extends Fragment {
     private FrameLayout frameLayout;
+
     User user;
     private Bitmap cachedBackgroundBitmap;
 
@@ -78,7 +79,6 @@ public class Home extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-
         frameLayout = view.findViewById(R.id.frameLayout);
         Bundle bundle = this.getArguments();
         if (getArguments() != null) {
@@ -166,7 +166,6 @@ public class Home extends Fragment {
                         else{
                             showAlertDialogString(buildingName);
                         }
-                        Toast.makeText(requireContext(), "Name: " + buildingName + ", Left: " + left + ", Top: " + top + ", Right: " + right + ", Bottom: " + bottom, Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -182,10 +181,10 @@ public class Home extends Fragment {
     {
         if(selectedInt.equals("1500"))
         {
-            DataClass dataClass = new DataClass(user.getUserName(),description,formattedDateTime,imageUrl, user.getLevel(),buildingNameString,user,"לא נבחרה אופציה",urgencySpinner.getSelectedItem().toString(),descriptionPla);
+            DataClass dataClass = new DataClass(user.getUserName(),description,formattedDateTime,imageUrl, user.getLevel(),buildingNameString,user,"לא נבחרה אופציה",urgencySpinner.getSelectedItem().toString(),descriptionPla, "עדיין פתוח" , "עדיין פתוח");
         }
         else {
-            DataClass dataClass = new DataClass(user.getUserName(), description, formattedDateTime, imageUrl, user.getLevel(), String.valueOf(selectedInt), user, selectedOptions.toString(), urgencySpinner.getSelectedItem().toString(), "לא נבחרה אופציה");
+            DataClass dataClass = new DataClass(user.getUserName(), description, formattedDateTime, imageUrl, user.getLevel(), String.valueOf(selectedInt), user, selectedOptions.toString(), urgencySpinner.getSelectedItem().toString(), "לא נבחרה אופציה","עדיין פתוח" , "עדיין פתוח");
         }
     }
     private void setupUrgencySpinner(Dialog dialog) {

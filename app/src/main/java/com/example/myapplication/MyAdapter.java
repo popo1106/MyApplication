@@ -39,29 +39,38 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
         {
             Glide.with(context).load(dataList.get(position).getImageUrl()).into(holder.recImage);
         }
-        holder.recTitle.setText(dataList.get(position).getNumClass());
-        holder.recRole.setText(dataList.get(position).getRole());
-        holder.recLang.setText(dataList.get(position).getTime());
-        holder.recName.setText(dataList.get(position).getUserName());
-        // Setting the color of the stripe based on urgency
-        if (dataList.get(position).getUrgency().equals("High")) {
-            holder.colorStripe.setBackgroundColor(context.getResources().getColor(R.color.red)); // Assuming high urgency should be red
-        } else if (dataList.get(position).getUrgency().equals("Medium")) {
-            holder.colorStripe.setBackgroundColor(Color.parseColor("#FFA500")); // Assuming medium urgency should be orange
-        } else if (dataList.get(position).getUrgency().equals("Low")) {
-            holder.colorStripe.setBackgroundColor(context.getResources().getColor(R.color.green)); // Assuming low urgency should be green
+        if(dataList.get(position).getRole().equals("נסגר"))
+        {
+            holder.recTitle.setText(dataList.get(position).getNumClass());
+            holder.recRole.setText(dataList.get(position).getRole());
+            holder.recLang.setText(dataList.get(position).getWhenClose());
+            holder.recName.setText(dataList.get(position).getWhoClose());
+            holder.colorStripe.setBackgroundColor(Color.parseColor("#FFFFFF"));
+
         }
         else
         {
-            holder.colorStripe.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            holder.recTitle.setText(dataList.get(position).getNumClass());
+            holder.recRole.setText(dataList.get(position).getRole());
+            holder.recLang.setText(dataList.get(position).getTime());
+            holder.recName.setText(dataList.get(position).getUserName());
+            // Setting the color of the stripe based on urgency
+            if (dataList.get(position).getUrgency().equals("High")) {
+                holder.colorStripe.setBackgroundColor(context.getResources().getColor(R.color.red)); // Assuming high urgency should be red
+            } else if (dataList.get(position).getUrgency().equals("Medium")) {
+                holder.colorStripe.setBackgroundColor(Color.parseColor("#FFA500")); // Assuming medium urgency should be orange
+            } else if (dataList.get(position).getUrgency().equals("Low")) {
+                holder.colorStripe.setBackgroundColor(context.getResources().getColor(R.color.green)); // Assuming low urgency should be green
+            }
         }
+
         holder.recCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(dataList.get(position).getUrgency().equals("no"))
+                if(dataList.get(position).getRole().equals("נסגר"))
                 {
                     Intent intent = new Intent(context, detailOnCloseTask.class);
-//                    intent.putExtra("detail", dataList.get(holder.getAdapterPosition()));
+                    intent.putExtra("detail", dataList.get(holder.getAdapterPosition()));
                     context.startActivity(intent);
                 }
                 else

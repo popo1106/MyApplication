@@ -34,6 +34,7 @@ public class SendOTPActivity extends AppCompatActivity {
     String phoneNumber;
     TextView Error;
     Spinner spinner2,orgSpinner;
+    String role;
     private Button buttonGetOTP;
     @SuppressLint("MissingInflatedId")
     @Override
@@ -41,13 +42,15 @@ public class SendOTPActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forget_password);
         inputMobile = findViewById(R.id.phoneNumber);
-
+        spinner2 = findViewById(R.id.spinner_level);
+        orgSpinner = findViewById(R.id.spinner_org);
         buttonGetOTP = findViewById(R.id.buttonGetOTP);
         Error  = findViewById(R.id.errorPhone);
     }
     protected void onStart() {
         super.onStart();
         createSpinner();
+
     }
     public void GetOTP(View view) {
         if(inputMobile.getText().toString().trim().isEmpty())
@@ -63,16 +66,12 @@ public class SendOTPActivity extends AppCompatActivity {
         else {
             phoneNumber = inputMobile.getText().toString();
         }
-        Log.e("hohojk","lop");
         checkUserByPhoneNumber(phoneNumber, new UserExistsCallback() {
             @Override
             public void onUserExists(boolean exists) {
                 if (exists) {
                     // User exists
                     buttonGetOTP.setVisibility(View.INVISIBLE);
-                    Log.e("hohojk1","lop");
-
-
                     PhoneAuthProvider.getInstance().verifyPhoneNumber(
                             "+972" + phoneNumber,
                             60,
@@ -96,7 +95,8 @@ public class SendOTPActivity extends AppCompatActivity {
                                     Intent intent = new Intent(getApplicationContext(), VerifyOTPActivity.class);
                                     intent.putExtra("phoneNumber", phoneNumber);
                                     intent.putExtra("verificationId", verificationId);
-                                    intent.putExtra("org", orgSpinner.getSelectedItem().toString());
+                                    Log.e("role1",role);
+                                    intent.putExtra("org", role);
                                     intent.putExtra("role", spinner2.getSelectedItem().toString());
                                     startActivity(intent);
                                 }
@@ -118,12 +118,12 @@ public class SendOTPActivity extends AppCompatActivity {
     }
 
     public void checkUserByPhoneNumber(String phoneNumber, UserExistsCallback callback) {
-        Log.e("hohojk3","lop");
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference usersRef = database.getReference("organization")
                 .child(orgSpinner.getSelectedItem().toString())
                 .child(spinner2.getSelectedItem().toString());
+        Log.e("role2",spinner2.getSelectedItem().toString());
         usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -133,6 +133,7 @@ public class SendOTPActivity extends AppCompatActivity {
                     String userPhoneNumber = userSnapshot.child("phone number").getValue(String.class);
                     if (userPhoneNumber != null && userPhoneNumber.equals(phoneNumber)) {
                         // User with the given phone number found
+                        role = spinner2.getSelectedItem().toString();
                         userExists = true;
                         break;
                     }
@@ -151,8 +152,7 @@ public class SendOTPActivity extends AppCompatActivity {
         });
     }
     public void createSpinner() {
-        spinner2 = findViewById(R.id.spinner_level);
-        orgSpinner = findViewById(R.id.spinner_org);
+
         List<String> orgList = new ArrayList<>();
 
         List<String> levelList = new ArrayList<>();

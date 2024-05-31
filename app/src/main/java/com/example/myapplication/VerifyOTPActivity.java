@@ -60,8 +60,9 @@ public class VerifyOTPActivity extends AppCompatActivity {
         Code6 = findViewById(R.id.Code6);
 
         verificationId = getIntent().getStringExtra("verificationId");
-        role = getIntent().getStringExtra("role");
         org = getIntent().getStringExtra("org");
+        role = getIntent().getStringExtra("role");
+        Log.e("role9",role);
         setupOTPInputs();
 
 
@@ -264,12 +265,15 @@ public class VerifyOTPActivity extends AppCompatActivity {
                 .child(org)
                 .child(role);
 
+        Log.e("phone number",role);
         usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
                     String userPhoneNumber = userSnapshot.child("phone number").getValue(String.class);
+                    Log.e("phone number",userPhoneNumber);
                     if (userPhoneNumber != null && userPhoneNumber.equals(phoneNumber)) {
+                        Log.e("phone number",userSnapshot.child("name").getValue(String.class));
                         // User with the given phone number found
                         User user = new User(userSnapshot.child("name").getValue(String.class),userSnapshot.child("email").getValue(String.class),userSnapshot.child("Id").getValue(String.class),role,org);
                         callback.onUserExists(user);

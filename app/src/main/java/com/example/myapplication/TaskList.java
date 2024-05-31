@@ -224,7 +224,6 @@ public class TaskList extends Fragment {
                         for (DataSnapshot itemSnapshot2 : itemSnapshot.getChildren()) {
                             if (itemSnapshot2.getValue() != null &&me &&user.getEmail().equals(itemSnapshot2.child("email").getValue(String.class))) {
                                 // Accessing the second element of the array
-                                Log.e("hello9","no");
                                 // Extracting values
                                 String description = itemSnapshot2.child("Description").getValue(String.class);
                                 String imageUrl = itemSnapshot2.child("imageUrl").getValue(String.class);
@@ -235,8 +234,7 @@ public class TaskList extends Fragment {
                                 String descriptionPlace = itemSnapshot2.child("Description of place").getValue(String.class);
 
                                 // Create a DataClass object
-                                Log.e("lol3", itemSnapshot3.getKey().toString());
-                                DataClass dataClass = new DataClass(name, description, time, imageUrl, role, itemSnapshot.getKey().toString(), user, listObject, itemSnapshot3.getKey().toString(),descriptionPlace);
+                                DataClass dataClass = new DataClass(name, description, time, imageUrl, role, itemSnapshot.getKey().toString(), user, listObject, itemSnapshot3.getKey().toString(),descriptionPlace,"אין אופציה","אין אופציה");
                                 dataClass.setKey(itemSnapshot.getKey().toString() + "-" + itemSnapshot2.getKey().toString());
                                 dataList.add(dataClass);
                                 // Now, you can use the dataClass object as needed
@@ -251,8 +249,7 @@ public class TaskList extends Fragment {
                                 String descriptionPlace = itemSnapshot2.child("Description of place").getValue(String.class);
 
                                 // Create a DataClass object
-                                Log.e("lol3", itemSnapshot3.getKey().toString());
-                                DataClass dataClass = new DataClass(name, description, time, imageUrl, role, itemSnapshot.getKey().toString(), user, listObject, itemSnapshot3.getKey().toString(),descriptionPlace);
+                                DataClass dataClass = new DataClass(name, description, time, imageUrl, role, itemSnapshot.getKey().toString(), user, listObject, itemSnapshot3.getKey().toString(),descriptionPlace,"אין אופציה","אין אופציה");
                                 dataClass.setKey(itemSnapshot.getKey().toString() + "-" + itemSnapshot2.getKey().toString());
                                 dataList.add(dataClass);
                             }
@@ -312,7 +309,7 @@ public class TaskList extends Fragment {
                             String whoOpenEmail = taskSnapshot.child("who open(email)").getValue(String.class);
                             String descriptionPlace = taskSnapshot.child("Description of place").getValue(String.class);
 
-                            DataClass dataClass = new DataClass(whoClose, description, whenClose, "dont use image", "נסגר", buildingSnapshot.getKey().toString(), user, object, "no",descriptionPlace);
+                            DataClass dataClass = new DataClass(whoOpen, description, whenOpen, "dont use image", "נסגר", buildingSnapshot.getKey().toString(), user, object, "no",descriptionPlace,whoClose,whenClose);
                             Log.e("description", description);
                             dataClass.setKey(buildingSnapshot.getKey().toString() + "-" + taskSnapshot.getKey().toString());
                             dataList.add(dataClass);
@@ -329,7 +326,7 @@ public class TaskList extends Fragment {
                             String whoOpenEmail = taskSnapshot.child("who open(email)").getValue(String.class);
                             String descriptionPlace = taskSnapshot.child("Description of place").getValue(String.class);
 
-                            DataClass dataClass = new DataClass(whoClose, description, whenClose, "dont use image", "נסגר", buildingSnapshot.getKey().toString(), user, object, "no",descriptionPlace);
+                            DataClass dataClass = new DataClass(whoOpen, description, whenOpen, "dont use image", "נסגר", buildingSnapshot.getKey().toString(), user, object, "no",descriptionPlace,whoClose,whenClose);
                             Log.e("description", description);
                             dataClass.setKey(buildingSnapshot.getKey().toString() + "-" + taskSnapshot.getKey().toString());
                             dataList.add(dataClass);
@@ -384,7 +381,7 @@ public class TaskList extends Fragment {
                             String descriptionPlace = taskSnapshot.child("Description of place").getValue(String.class);
 
                             // Create a DataClass object
-                            DataClass dataClass = new DataClass(name, description, time, imageUrl, role, buildingSnapshot.getKey().toString(), user, listObject,urgency,descriptionPlace);
+                            DataClass dataClass = new DataClass(name, description, time, imageUrl, role, buildingSnapshot.getKey().toString(), user, listObject,urgency,descriptionPlace,"אין אופציה","אין אופציה");
                             dataClass.setKey(buildingSnapshot.getKey().toString() + "-" + taskSnapshot.getKey().toString());
                             dataList.add(dataClass);
 
@@ -401,7 +398,7 @@ public class TaskList extends Fragment {
                             String descriptionPlace = taskSnapshot.child("Description of place").getValue(String.class);
 
                             // Create a DataClass object
-                            DataClass dataClass = new DataClass(name, description, time, imageUrl, role, buildingSnapshot.getKey().toString(), user, listObject,urgency,descriptionPlace);
+                            DataClass dataClass = new DataClass(name, description, time, imageUrl, role, buildingSnapshot.getKey().toString(), user, listObject,urgency,descriptionPlace,"אין אופציה","אין אופציה");
                             dataClass.setKey(buildingSnapshot.getKey().toString() + "-" + taskSnapshot.getKey().toString());
                             dataList.add(dataClass);
                         }

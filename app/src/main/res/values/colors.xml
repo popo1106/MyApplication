@@ -23,4 +23,5 @@
     <color name="Transparent">#00FFFFFF</color>
     <color name="red">#c70000</color>
     <color name="green">#00ff00</color>
+    <color name="greenAlarm">#59e4a8</color>
 </resources>

@@ -49,7 +49,7 @@ tools:context=".detailOnCloseTask">
                 android:layout_gravity="center"
 
                 android:padding="20dp"
-                android:text="Time:"
+                android:text="Time to clolse:"
                 android:textColor="@color/lavender"
                 android:textSize="18sp" />
 
@@ -57,7 +57,7 @@ tools:context=".detailOnCloseTask">
                 android:id="@+id/detailLang"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="40dp"
+                android:layout_marginLeft="20dp"
                 android:padding="20dp"
                 android:text="Time"
                 android:textColor="@color/lavender"
@@ -73,6 +73,7 @@ tools:context=".detailOnCloseTask">
                 android:layout_gravity="center"
                 android:padding="20dp"
                 android:text="Object:"
+                android:id="@+id/titleObject"
                 android:textColor="@color/lavender"
                 android:textSize="18sp" />
 

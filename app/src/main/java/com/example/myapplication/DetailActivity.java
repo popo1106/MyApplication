@@ -35,7 +35,7 @@ public class DetailActivity extends AppCompatActivity {
     TextView detailDesc, detailTitle, detailLang,listObject2Fix,titleObject;
     ImageView detailImage;
     TaskList TL = new TaskList();
-    FloatingActionButton deleteButton;
+    FloatingActionButton deleteButton,editButton;
     String imageUrl = "";
     String key ="";
     String Role;
@@ -55,13 +55,14 @@ public class DetailActivity extends AppCompatActivity {
         detailTitle = findViewById(R.id.detailTitle);
         detailLang = findViewById(R.id.detailLang);
         deleteButton = findViewById(R.id.deleteButton);
+        editButton = findViewById(R.id.editButton);
         listObject2Fix = findViewById(R.id.listObject);
         titleObject = findViewById(R.id.titleObject);
         backButton = findViewById(R.id.backIcon);
         if (getIntent().getExtras() != null) {
             detail = (DataClass) getIntent().getSerializableExtra("detail");
             detailDesc.setText(detail.getDescription());
-            detailTitle.setText("class: " + detail.getNumClass());
+            detailTitle.setText("where: " + detail.getNumClass());
             detailLang.setText(detail.getTime());
             if ((detail.listObject() == null || detail.listObject().isEmpty() || detail.listObject().equals("לא נבחרה אופציה"))&&!detail.getDescriptionPlace().equals("לא נבחרה אופציה")) {
                 titleObject.setText("Description of place:");
@@ -90,6 +91,13 @@ public class DetailActivity extends AppCompatActivity {
                 finish();
             }
         });
+        editButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(DetailActivity.this, alarmmanager.class);
+                startActivity(intent);
+            }
+        });
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -111,6 +119,7 @@ public class DetailActivity extends AppCompatActivity {
                             Map<String, Object> closeTaskData = new HashMap<>();
                             closeTaskData.put("Description", taskData.get("Description"));
                             closeTaskData.put("object", taskData.get("object"));
+                            closeTaskData.put("Description of place", taskData.get("Description of place"));
                             closeTaskData.put("who close", currentUser.getUserName());
                             closeTaskData.put("when close", getCurrentDateTime());
                             closeTaskData.put("when open", taskData.get("time"));
