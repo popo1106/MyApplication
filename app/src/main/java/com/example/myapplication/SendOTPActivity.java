@@ -32,9 +32,10 @@ public class SendOTPActivity extends AppCompatActivity {
 
     private EditText inputMobile;
     String phoneNumber;
+    String role;
     TextView Error;
     Spinner spinner2,orgSpinner;
-    String role;
+
     private Button buttonGetOTP;
     @SuppressLint("MissingInflatedId")
     @Override
@@ -96,8 +97,8 @@ public class SendOTPActivity extends AppCompatActivity {
                                     intent.putExtra("phoneNumber", phoneNumber);
                                     intent.putExtra("verificationId", verificationId);
                                     Log.e("role1",role);
-                                    intent.putExtra("org", role);
-                                    intent.putExtra("role", spinner2.getSelectedItem().toString());
+                                    intent.putExtra("org", orgSpinner.getSelectedItem().toString());
+                                    intent.putExtra("role", role);
                                     startActivity(intent);
                                 }
                             }

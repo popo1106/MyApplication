@@ -18,8 +18,6 @@ public class WaitingScreen extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 finish();
-//                Intent intent = new Intent(WaitingScreen.this, MainActivity.class);
-//                startActivity(intent);
             }
 
         });

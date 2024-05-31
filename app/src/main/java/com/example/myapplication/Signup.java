@@ -35,7 +35,7 @@ import java.util.Locale;
 import java.util.Map;
 
 public class Signup extends AppCompatActivity {
-    String selectedValue, selectedValue2;
+    String org, role;
     private FirebaseAuth auth;
     Spinner spinner, spinner2;
     private EditText signupEmail, signupPassword, signupId, signupName,signupPhone;
@@ -126,7 +126,7 @@ public class Signup extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
                 // Update selectedValue when an item is selected
-                selectedValue = dataList.get(position);
+                org = dataList.get(position);
             }
 
             @Override
@@ -140,7 +140,7 @@ public class Signup extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
                 // Update selectedValue2 when an item is selected
-                selectedValue2 = levelList.get(position);
+                role = levelList.get(position);
             }
 
             @Override
@@ -190,7 +190,7 @@ public class Signup extends AppCompatActivity {
         DatabaseReference waitingListRef = FirebaseDatabase.getInstance().getReference("Waiting-list");
 
         // Check in "Waiting-list" database
-        checkIfIdExists(waitingListRef, Id,"Id", new IdCheckCallback() {
+        checkIfIdExists(waitingListRef, Id, new IdCheckCallback() {
             @Override
             public void onIdChecked(boolean exists) {
                 if (exists) {
@@ -201,7 +201,7 @@ public class Signup extends AppCompatActivity {
                     DatabaseReference otherDbRef = FirebaseDatabase.getInstance().getReference("organization");
 
                     // Check in the other database
-                    checkIfIdExists(otherDbRef, Id,"Id", new IdCheckCallback() {
+                    checkIfIdExists(otherDbRef, Id, new IdCheckCallback() {
                         @Override
                         public void onIdChecked(boolean exists) {
                             if (exists) {
@@ -219,7 +219,7 @@ public class Signup extends AppCompatActivity {
         });
     }
 
-    private void checkIfIdExists(DatabaseReference ref, String id,String whatCheck, IdCheckCallback callback) {
+    private void checkIfIdExists(DatabaseReference ref, String id, IdCheckCallback callback) {
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -259,8 +259,8 @@ public class Signup extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     // Sign-up successful, continue with adding user data to database
                     DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("Waiting-list")
-                            .child(selectedValue) // Add user under selected organization
-                            .child(selectedValue2) // Add user under selected level
+                            .child(org) // Add user under selected organization
+                            .child(role) // Add user under selected level
                             .push(); // Push user data with a unique ID
                     Calendar calendar = Calendar.getInstance();
 
@@ -317,31 +317,26 @@ public class Signup extends AppCompatActivity {
     public static boolean isValidIsraeliCellPhoneNumber(String phoneNumber) {
         // Check if the phone number is exactly 10 digits long
         if (phoneNumber.length() != 10) {
-            Log.e("not4","lol");
             return false;
         }
 
         // Check if the phone number starts with "05"
         if (!phoneNumber.startsWith("05")) {
-            Log.e("not2","lol");
             return false;
         }
 
         // Check if the third digit is between 0 and 9
         char thirdDigit = phoneNumber.charAt(2);
         if (thirdDigit < '0' || thirdDigit > '9') {
-            Log.e("not3","lol");
             return false;
         }
 
         // Check if the remaining characters are digits
         for (int i = 3; i < phoneNumber.length(); i++) {
             if (!Character.isDigit(phoneNumber.charAt(i))) {
-                Log.e("not1","lol");
                 return false;
             }
         }
-        Log.e("helloMaor","lol");
         // If all checks pass, the phone number is valid
         return true;
     }
