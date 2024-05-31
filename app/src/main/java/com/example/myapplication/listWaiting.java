@@ -36,6 +36,7 @@ public class listWaiting extends AppCompatActivity {
     private AlertDialog dialog;
     private ImageView deleteButton;
     private TextView emptyView;
+    ImageView backButton;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -44,9 +45,14 @@ public class listWaiting extends AppCompatActivity {
         setContentView(R.layout.activity_list_waiting);
         recyclerView = findViewById(R.id.recyclerViewWaiting);
         emptyView = findViewById(R.id.emptyView);
+        backButton = findViewById(R.id.backIcon);
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 1);
-
+        backButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                finish();
+            }
+        });
         recyclerView.setLayoutManager(gridLayoutManager);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);

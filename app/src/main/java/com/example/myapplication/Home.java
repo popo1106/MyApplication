@@ -310,7 +310,6 @@ public class Home extends Fragment {
         Button uploadImage = dialog.findViewById(R.id.upLoadImage);
         myimage = dialog.findViewById(R.id.myImage);
         createSpinner(dialog,building);
-        Log.e("kokok912","Skk");
         setupUrgencySpinner(dialog);
         selectOptionsButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -366,11 +365,9 @@ public class Home extends Fragment {
                 dialog5.show();
             }
         });
-        Log.e("kokok12","Skk");
         numberSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-                Log.e("kokok0012", "Skk");
 
                 selectedInt = numberSpinner.getSelectedItem().toString();
                 if (selectedInt.equals("שירותים א") || selectedInt.equals("שירותים ב"))
@@ -381,7 +378,6 @@ public class Home extends Fragment {
                 {
                     selectedInt = String.valueOf(building)+ "-"+"בניין";
                 }
-                Log.e("kokok13332","Skk");
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
@@ -392,7 +388,6 @@ public class Home extends Fragment {
         uploadImage.setOnClickListener(view2 ->{
             checkPermission();
         } );
-        Log.e("kokok5335212","Skk");
         Button sumbit = dialog.findViewById(R.id.send);
         sumbit.setOnClickListener(view1 -> {
             description = descriptionEt.getText().toString();
