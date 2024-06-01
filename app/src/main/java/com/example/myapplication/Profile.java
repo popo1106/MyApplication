@@ -18,7 +18,6 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class Profile extends Fragment {
 
-
     User user;
     TextView userName,
             idUser,
