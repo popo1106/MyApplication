@@ -13,17 +13,16 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class Profile extends Fragment {
-    BottomNavigationView BNV;
-    SharedPreferences.Editor editor;
-    String name;
+
+
     User user;
-    String password;
-    TextView userName,idUser,email;
+    TextView userName,
+            idUser,
+            email;
     ImageView logout;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -43,7 +42,7 @@ public class Profile extends Fragment {
         {
             setTopMargin(view, 35);
         }
-        name = user.getUserName();
+        String name = user.getUserName();
         userName =  view.findViewById(R.id.userName);
         email = view.findViewById(R.id.email);
         idUser = view.findViewById(R.id.idUser);

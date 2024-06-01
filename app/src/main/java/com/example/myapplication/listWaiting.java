@@ -28,13 +28,12 @@ import java.util.Map;
 
 public class listWaiting extends AppCompatActivity {
     private RecyclerView recyclerView;
+    private DatabaseReference databaseReference;
     User user;
     private MyAdapterWaiting adapter;
     private List<waitingCardAp> dataList;
-    private DatabaseReference databaseReference;
     private ValueEventListener eventListener;
     private AlertDialog dialog;
-    private ImageView deleteButton;
     private TextView emptyView;
     ImageView backButton;
 

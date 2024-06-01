@@ -11,7 +11,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -32,11 +31,13 @@ public class TaskList extends Fragment {
     RecyclerView recyclerView;
     MyAdapter adapter;
     User user;
+    List<DataClass> dataList;
+    ValueEventListener eventListener;
     TextView noTasksTextView;
 
-    List<DataClass> dataList;
+
     DatabaseReference databaseReference;
-    ValueEventListener eventListener;
+
     public void onDestroyView() {
         super.onDestroyView();
         if (eventListener != null) {
@@ -58,7 +59,6 @@ public class TaskList extends Fragment {
         builder.setView(R.layout.progress_layout);
         AlertDialog dialog = builder.create();
         dialog.show();
-        Bundle bundle = this.getArguments();
         if(getArguments() != null) {
             user = (User) getArguments().getSerializable("name");
         }
@@ -138,7 +138,7 @@ public class TaskList extends Fragment {
                         StringBuilder filters = new StringBuilder("Selected filters:\n");
                         if(isMeChecked)
                         {
-                            if(!isOpenChecked && !isClosedChecked )
+                            if(!isOpenChecked && !isClosedChecked && !isHighChecked&& !isMediumChecked&&!isLowChecked)
                             {
                                 showOpenTask(dialog,isMeChecked);
                                 showCloseTask(dialog,true,isMeChecked);
@@ -176,7 +176,6 @@ public class TaskList extends Fragment {
                         }
 
 
-                        Toast.makeText(requireContext(), filters.toString(), Toast.LENGTH_LONG).show();
                     })
                     .setNegativeButton("Cancel", null)
                     .create()

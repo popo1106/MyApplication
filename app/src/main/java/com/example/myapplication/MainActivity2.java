@@ -21,18 +21,17 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity2 extends AppCompatActivity {
-    SharedPreferences.Editor editor;
+
     Profile profile = new Profile();
     TaskList TL = new TaskList();
+    User user;
     Home home = new Home();
     BottomNavigationView BNV;
-    User user;
+
     Toolbar toolbar;
 
     AlertDialog loadingDialog;
 
-    String name;
-    String password;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

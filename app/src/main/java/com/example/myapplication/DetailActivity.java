@@ -34,7 +34,6 @@ public class DetailActivity extends AppCompatActivity {
 
     TextView detailDesc, detailTitle, detailLang,listObject2Fix,titleObject;
     ImageView detailImage;
-    TaskList TL = new TaskList();
     FloatingActionButton deleteButton,editButton;
     String imageUrl = "";
     String key ="";
@@ -87,7 +86,6 @@ public class DetailActivity extends AppCompatActivity {
 
         backButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                Intent intent = new Intent(DetailActivity.this, TaskList.class);
                 finish();
             }
         });

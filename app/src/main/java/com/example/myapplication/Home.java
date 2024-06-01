@@ -56,25 +56,28 @@ import java.util.Map;
 
 public class Home extends Fragment {
     private FrameLayout frameLayout;
-
-    User user;
     private Bitmap cachedBackgroundBitmap;
 
-    Spinner numberSpinner,urgencySpinner;
+    User user;
     private static final int REQUEST_IMAGE_GALLERY = 1;
     private static final int REQUEST_PERMISSION = 200;
     Uri selectedImageUri;
-
-    String buildingNameString;
-    String imageUrl,urgencyLevel,formattedDateTime,description,descriptionPla,selectedInt = "1500";
-    int flagImage;
-    ImageView selectOptionsButton,myimage;
+    String imageUrl,
+            urgencyLevel,
+            buildingNameString,
+            formattedDateTime,
+            description,
+            descriptionPla,
+            selectedInt = "1500";
     StringBuilder selectedOptions ;
-    ArrayAdapter<String> adapter;
-    String[] listItems;
     boolean[] checkedItems;
-    TextView selectedOptionsTextView;
+    String[] listItems;
     ArrayList<Integer> selectedItems = new ArrayList<>();
+    int flagImage;
+
+    Spinner numberSpinner,urgencySpinner;
+    ImageView selectOptionsButton,myimage;
+    TextView selectedOptionsTextView;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -604,6 +607,6 @@ public class Home extends Fragment {
             });
         } catch (IOException e) {
             e.printStackTrace();
-        }
+    }
     }
 }

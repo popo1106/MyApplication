@@ -35,7 +35,10 @@ public class VerifyOTPActivity extends AppCompatActivity {
     private EditText Code1, Code2, Code3, Code4, Code5, Code6;
 
 
-    private String verificationId,org,role,phoneNumber;
+    private String verificationId,
+            org,
+            role,
+            phoneNumber;
     private ProgressBar progressBar;
     private TextView textMobile;
     private Button buttonVerify;
@@ -62,7 +65,6 @@ public class VerifyOTPActivity extends AppCompatActivity {
         verificationId = getIntent().getStringExtra("verificationId");
         org = getIntent().getStringExtra("org");
         role = getIntent().getStringExtra("role");
-        Log.e("role9",role);
         setupOTPInputs();
 
 
