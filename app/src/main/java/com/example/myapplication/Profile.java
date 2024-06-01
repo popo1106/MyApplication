@@ -60,7 +60,6 @@ public class Profile extends Fragment {
         return view;
     }
 
-
     private void logout() {
         SharedPreferences preferences = requireActivity().getSharedPreferences("checkbox", MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
@@ -92,4 +91,5 @@ public class Profile extends Fragment {
         float density = getResources().getDisplayMetrics().density;
         return Math.round(dp * density);
     }
+
 }

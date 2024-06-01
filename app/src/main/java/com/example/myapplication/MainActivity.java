@@ -1,9 +1,16 @@
 package com.example.myapplication;
 
+import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.InputType;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
@@ -40,7 +47,12 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseReference databaseReference;
     EditText userId, UserPassword;
     TextView signup;
+    private AlertDialog noInternetDialog;
+    private boolean isNetworkConnected = true;
+
+
     CheckBox remember;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
     }
 
     private void saveUserPreferences(String userID) {
@@ -97,9 +110,40 @@ public class MainActivity extends AppCompatActivity {
         remember = findViewById(R.id.remember);
 
     }
+
+    private void registerNetworkChangeReceiver() {
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(networkChangeReceiver, filter);
+    }
+
+    private BroadcastReceiver networkChangeReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+            isNetworkConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+
+            if (!isNetworkConnected) {
+                // No internet connection
+                showNoInternetDialog();
+            } else {
+                // Internet connection is available
+                dismissAlertDialog();
+            }
+        }
+    };
+    private void unregisterNetworkChangeReceiver() {
+        unregisterReceiver(networkChangeReceiver);
+    }
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unregisterNetworkChangeReceiver();
+    }
     @Override
     protected void onStart() {
         super.onStart();
+        registerNetworkChangeReceiver();
         createSpinner();
     }
     public void createSpinner() {
@@ -278,6 +322,36 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             });
+        }
+    }
+    private void dismissAlertDialog() {
+        if (noInternetDialog != null && noInternetDialog.isShowing()) {
+            noInternetDialog.dismiss();
+        }
+    }
+    private void showNoInternetDialog() {
+        // Inflate the custom layout
+        View dialogView = LayoutInflater.from(MainActivity.this).inflate(R.layout.noconiction, null);
+
+        // Build the AlertDialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setView(dialogView)
+                .setCancelable(false);
+
+        noInternetDialog = builder.create();
+        noInternetDialog.show();
+    }
+    private void monitorInternetConnection() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        // Check if there is an active network connection
+        NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+        if (activeNetwork == null || !activeNetwork.isConnectedOrConnecting()) {
+            // No active network connection, show AlertDialog
+            showNoInternetDialog();
+        } else {
+            // Active network connection is available, dismiss AlertDialog if it's showing
+            dismissAlertDialog();
         }
     }
 

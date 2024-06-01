@@ -1,8 +1,15 @@
 package com.example.myapplication;
 
+import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -36,6 +43,8 @@ import java.util.Map;
 
 public class Signup extends AppCompatActivity {
     String org, role;
+    private AlertDialog noInternetDialog;
+
     private FirebaseAuth auth;
     Spinner spinner, spinner2;
     private EditText signupEmail, signupPassword, signupId, signupName,signupPhone;
@@ -61,6 +70,8 @@ public class Signup extends AppCompatActivity {
                 finish();
             }
         });
+        monitorInternetConnection();
+
     }
 
     @Override
@@ -340,4 +351,73 @@ public class Signup extends AppCompatActivity {
         // If all checks pass, the phone number is valid
         return true;
     }
+    private void dismissAlertDialog() {
+        if (noInternetDialog != null && noInternetDialog.isShowing()) {
+            noInternetDialog.dismiss();
+        }
+    }
+
+    private void showAlertDialog() {
+        View dialogView = LayoutInflater.from(Signup.this).inflate(R.layout.noconiction, null);
+
+        // Build the AlertDialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(Signup.this);
+        builder.setView(dialogView)
+                .setCancelable(false);
+
+        noInternetDialog = builder.create();
+        noInternetDialog.show();
+    }
+
+    protected void onResume() {
+        super.onResume();
+        monitorInternetConnection();
+    }
+
+    private void monitorInternetConnection() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        // Check if there is an active network connection
+        NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+        if (activeNetwork == null || !activeNetwork.isConnectedOrConnecting()) {
+            // No active network connection, show AlertDialog
+            showAlertDialog();
+        } else {
+            // Active network connection is available, dismiss AlertDialog if it's showing
+            dismissAlertDialog();
+        }
+
+        // Register a broadcast receiver to listen for network changes
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(networkChangeReceiver, intentFilter);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Unregister the broadcast receiver when the activity is paused
+        unregisterReceiver(networkChangeReceiver);
+    }
+
+    // Broadcast receiver to listen for network changes
+    private BroadcastReceiver networkChangeReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Check if the connectivity has changed
+            if (ConnectivityManager.CONNECTIVITY_ACTION.equals(intent.getAction())) {
+                ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+                // Check if there is an active network connection
+                NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+                if (activeNetwork == null || !activeNetwork.isConnectedOrConnecting()) {
+                    // No active network connection, show AlertDialog
+                    showAlertDialog();
+                } else {
+                    // Active network connection is available, dismiss AlertDialog if it's showing
+                    dismissAlertDialog();
+                }
+            }
+        }
+    };
 }

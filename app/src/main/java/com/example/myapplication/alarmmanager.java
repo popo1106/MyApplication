@@ -31,8 +31,6 @@ import java.util.Calendar;
 
 public class alarmmanager extends AppCompatActivity {
     private static final int NOTIFICATION_PERMISSION_REQUEST_CODE = 101;
-    private static final int REQUEST_PERMISSION_CODE = 1;
-
     private MaterialTimePicker timePicker;
     private Calendar calendar;
     private AlarmManager alarmManager;
@@ -139,9 +137,6 @@ public class alarmmanager extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, NOTIFICATION_PERMISSION_REQUEST_CODE);
         }
-    }
-    private void requestPermission() {
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WAKE_LOCK}, REQUEST_PERMISSION_CODE);
     }
 
     @Override

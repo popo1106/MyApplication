@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -11,6 +12,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkRequest;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -62,6 +67,7 @@ public class Home extends Fragment {
     private static final int REQUEST_IMAGE_GALLERY = 1;
     private static final int REQUEST_PERMISSION = 200;
     Uri selectedImageUri;
+    private AlertDialog noInternetDialog;
     String imageUrl,
             urgencyLevel,
             buildingNameString,
@@ -127,6 +133,7 @@ public class Home extends Fragment {
             }
             return false;
         });
+        monitorInternetConnection();
 
         return view;
     }
@@ -608,5 +615,48 @@ public class Home extends Fragment {
         } catch (IOException e) {
             e.printStackTrace();
     }
+    }
+    private void showNoInternetDialog() {
+        if (noInternetDialog != null && noInternetDialog.isShowing()) {
+            return;
+        }
+
+        // Inflate the custom layout
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.noconiction, null);
+
+        // Build the AlertDialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setView(dialogView)
+                .setCancelable(false);
+
+        noInternetDialog = builder.create();
+        noInternetDialog.show();
+    }
+
+
+    private void dismissNoInternetDialog() {
+        if (noInternetDialog != null && noInternetDialog.isShowing()) {
+            noInternetDialog.dismiss();
+        }
+    }
+
+    private void monitorInternetConnection() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkRequest networkRequest = new NetworkRequest.Builder()
+                .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                .build();
+
+        connectivityManager.registerNetworkCallback(networkRequest, new ConnectivityManager.NetworkCallback() {
+            @Override
+            public void onAvailable(@NonNull Network network) {
+                requireActivity().runOnUiThread(() -> dismissNoInternetDialog());
+            }
+
+            @Override
+            public void onLost(@NonNull Network network) {
+                requireActivity().runOnUiThread(() -> showNoInternetDialog());
+            }
+        });
     }
 }

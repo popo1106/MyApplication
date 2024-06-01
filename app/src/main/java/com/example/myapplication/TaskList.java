@@ -35,7 +35,6 @@ public class TaskList extends Fragment {
     ValueEventListener eventListener;
     TextView noTasksTextView;
 
-
     DatabaseReference databaseReference;
 
     public void onDestroyView() {
@@ -49,7 +48,6 @@ public class TaskList extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_task_list, container, false);
-
         recyclerView = view.findViewById(R.id.recyclerView);
         noTasksTextView = view.findViewById(R.id.noTasksTextView); // Add this line
         GridLayoutManager gridLayoutManager = new GridLayoutManager(requireContext(), 1);
@@ -181,7 +179,6 @@ public class TaskList extends Fragment {
                     .create()
                     .show();
         });
-
         return view;
     }
 
@@ -350,8 +347,7 @@ public class TaskList extends Fragment {
         });
     }
 
-    private void showUrgency(Dialog dialog, String urgency, boolean me)
-    {
+    private void showUrgency(Dialog dialog, String urgency, boolean me) {
 
         adapter = new MyAdapter(requireContext(), dataList);
         recyclerView.setAdapter(adapter);
@@ -367,7 +363,7 @@ public class TaskList extends Fragment {
                     // Iterate through each task under the "High" category
                     for (DataSnapshot taskSnapshot : buildingSnapshot.getChildren()) {
                         // Access the task details
-                        if (taskSnapshot.getValue() != null&& me &&user.getEmail().equals(taskSnapshot.child("email").getValue(String.class))) {
+                        if (taskSnapshot.getValue() != null && me && user.getEmail().equals(taskSnapshot.child("email").getValue(String.class))) {
                             // Accessing the second element of the array
 
                             // Extracting values
@@ -380,14 +376,12 @@ public class TaskList extends Fragment {
                             String descriptionPlace = taskSnapshot.child("Description of place").getValue(String.class);
 
                             // Create a DataClass object
-                            DataClass dataClass = new DataClass(name, description, time, imageUrl, role, buildingSnapshot.getKey().toString(), user, listObject,urgency,descriptionPlace,"אין אופציה","אין אופציה");
+                            DataClass dataClass = new DataClass(name, description, time, imageUrl, role, buildingSnapshot.getKey().toString(), user, listObject, urgency, descriptionPlace, "אין אופציה", "אין אופציה");
                             dataClass.setKey(buildingSnapshot.getKey().toString() + "-" + taskSnapshot.getKey().toString());
                             dataList.add(dataClass);
 
                             // Now, you can use the dataClass object as needed
-                        }
-                        else if(taskSnapshot.getValue() != null&&!me)
-                        {
+                        } else if (taskSnapshot.getValue() != null && !me) {
                             String description = taskSnapshot.child("Description").getValue(String.class);
                             String imageUrl = taskSnapshot.child("imageUrl").getValue(String.class);
                             String name = taskSnapshot.child("name").getValue(String.class);
@@ -397,7 +391,7 @@ public class TaskList extends Fragment {
                             String descriptionPlace = taskSnapshot.child("Description of place").getValue(String.class);
 
                             // Create a DataClass object
-                            DataClass dataClass = new DataClass(name, description, time, imageUrl, role, buildingSnapshot.getKey().toString(), user, listObject,urgency,descriptionPlace,"אין אופציה","אין אופציה");
+                            DataClass dataClass = new DataClass(name, description, time, imageUrl, role, buildingSnapshot.getKey().toString(), user, listObject, urgency, descriptionPlace, "אין אופציה", "אין אופציה");
                             dataClass.setKey(buildingSnapshot.getKey().toString() + "-" + taskSnapshot.getKey().toString());
                             dataList.add(dataClass);
                         }
@@ -407,7 +401,7 @@ public class TaskList extends Fragment {
                 dialog.dismiss();
                 // Check if dataList is empty and show/hide noTasksTextView
                 if (dataList.isEmpty()) {
-                    noTasksTextView.setText("There are no open urgent tasks of the type:"+urgency);
+                    noTasksTextView.setText("There are no open urgent tasks of the type:" + urgency);
                     noTasksTextView.setVisibility(View.VISIBLE);
                 } else {
                     noTasksTextView.setVisibility(View.GONE);
@@ -420,6 +414,6 @@ public class TaskList extends Fragment {
                 dialog.dismiss();
             }
         });
-
     }
+
 }
