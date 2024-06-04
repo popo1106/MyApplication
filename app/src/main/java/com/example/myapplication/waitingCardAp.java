@@ -17,6 +17,13 @@ public class waitingCardAp {
         this.key = key;
     }
 
+    /**
+     *
+     * @param userName
+     * @param role
+     * @param time
+     * @param IdUser
+     */
     public waitingCardAp(String userName, String role, String time, String IdUser) {
         this.userName = userName;
         this.role = role;

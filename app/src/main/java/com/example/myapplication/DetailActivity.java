@@ -100,16 +100,19 @@ public class DetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.e("DeleteAction", "Urgency: " + detail.getUrgency());
-                String[] parts = key.split("-");
+
+                String[] parts = key.split("@");
                 String NumClass = parts[0];
                 String id = parts[1];
-                Log.e("DeleteAction", "Urgency: " + detail.getUrgency());
+
                 DatabaseReference openTaskRef = FirebaseDatabase.getInstance().getReference("open-task").child(currentUser.getOrg()).child(detail.getUrgency()).child(NumClass).child(id);
                 DatabaseReference closeTaskRef = FirebaseDatabase.getInstance().getReference("close-task").child(currentUser.getOrg()).child(NumClass);
 
                 openTaskRef.addListenerForSingleValueEvent(new ValueEventListener() {
+
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        Log.e("DeleteAction93", "Urgency: " + detail.getUrgency());
                         if (dataSnapshot.exists()) {
                             Map<String, Object> taskData = (Map<String, Object>) dataSnapshot.getValue();
 
@@ -123,6 +126,7 @@ public class DetailActivity extends AppCompatActivity {
                             closeTaskData.put("when open", taskData.get("time"));
                             closeTaskData.put("who open", taskData.get("name"));
                             closeTaskData.put("who open(email)", taskData.get("email"));
+                            Log.e("DeleteAction23", "Urgency: " + detail.getUrgency());
 
                             // Retrieve the last task number
                             closeTaskRef.orderByKey().limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -180,8 +184,11 @@ public class DetailActivity extends AppCompatActivity {
                         Toast.makeText(DetailActivity.this, "Failed to read task data", Toast.LENGTH_SHORT).show();
                     }
                 });
+                Log.e("DeleteAction113", "Urgency: " + detail.getUrgency());
             }
+
         });
+
 
     }
         private String getCurrentDateTime () {

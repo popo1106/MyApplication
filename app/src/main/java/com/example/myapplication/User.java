@@ -19,6 +19,10 @@ public class User implements Serializable {
         this.org = org;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getUserName() {
         return userName;
     }
